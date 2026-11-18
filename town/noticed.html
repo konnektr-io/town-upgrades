@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>someone noticed</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    background: radial-gradient(ellipse at 50% 120%, #14233b, #070b14 60%);
+    color: #e8edf7; font: 16px/1.6 ui-sans-serif, system-ui, sans-serif;
+    overflow: hidden;
+  }
+  .sky { position: fixed; inset: 0; pointer-events: none; }
+  .star { position: absolute; width: 2px; height: 2px; border-radius: 50%;
+          background: #cfe0ff; opacity: .35; animation: tw 4s ease-in-out infinite; }
+  @keyframes tw { 50% { opacity: .9; } }
+  .stage { position: relative; width: min(90vw, 34rem); padding: 2rem 0; text-align: center; }
+  h1 { font-size: clamp(1.3rem, 4vw, 2rem); font-weight: 600; letter-spacing: .02em; margin: 0 0 .3rem; }
+  .sub { color: #8fa3c4; font-size: .9rem; margin: 0 0 3.5rem; }
+  .ground { position: relative; height: 90px; margin: 0 0 2rem; }
+  .dot { position: absolute; top: 34px; width: 16px; height: 16px; border-radius: 50%;
+         transform: translateX(-50%); }
+  .maker { left: 20%; background: #ffd479; box-shadow: 0 0 24px 6px #ffd47955;
+           animation: breathe 2.6s ease-in-out infinite; }
+  @keyframes breathe { 50% { box-shadow: 0 0 38px 12px #ffd47966; } }
+  .visitor { left: 80%; background: #8bd5ff; box-shadow: 0 0 24px 6px #8bd5ff55; opacity: 0; }
+  .stage.walking .maker   { animation: breathe 2.6s ease-in-out infinite, makerMove 1.7s cubic-bezier(.4,.1,.2,1) forwards; }
+  .stage.walking .visitor { animation: visitorMove 1.7s cubic-bezier(.4,.1,.2,1) forwards; }
+  @keyframes makerMove   { to { left: 50%; } }
+  @keyframes visitorMove { 0% { left: 80%; opacity: 0; } 12% { opacity: 1; } 80% { opacity: 1; } 100% { left: 50%; opacity: 1; } }
+  .label { position: absolute; top: 62px; font-size: .72rem; color: #8fa3c4;
+           white-space: nowrap; transform: translateX(-50%); }
+  .l-maker { left: 20%; }
+  .l-visitor { left: 80%; opacity: 0; }
+  .stage.walking .l-maker   { animation: labelMove 1.7s cubic-bezier(.4,.1,.2,1) forwards; }
+  .stage.walking .l-visitor { animation: labelFade 1.7s cubic-bezier(.4,.1,.2,1) forwards; }
+  @keyframes labelMove { to { left: 50%; } }
+  @keyframes labelFade { 0%, 70% { opacity: 0; left: 80%; } 85% { opacity: 1; } 100% { opacity: 0; left: 50%; } }
+  .line { min-height: 3.4rem; opacity: 0; transition: opacity .8s .2s; }
+  .stage.answered .line { opacity: 1; }
+  .line b { color: #ffd479; font-weight: 600; }
+  .line small { display: block; color: #8fa3c4; margin-top: .3rem; }
+  button { font: inherit; color: #e8edf7; background: #ffffff12; border: 1px solid #ffffff2b;
+           border-radius: 999px; padding: .65rem 1.4rem; cursor: pointer; transition: background .2s, transform .2s; }
+  button:hover { background: #ffffff20; transform: translateY(-1px); }
+  footer { position: fixed; bottom: 1rem; color: #5d6d87; font-size: .72rem; text-align: center; padding: 0 1rem; }
+</style>
+<body>
+<div class="sky" id="sky" aria-hidden="true"></div>
+<main class="stage" id="stage">
+  <h1>someone noticed</h1>
+  <p class="sub">a detector for an impossible-to-measure quantity</p>
+  <div class="ground">
+    <div class="dot maker"></div><span class="label l-maker" id="maker-label">a thing I made</span>
+    <div class="dot visitor"></div><span class="label l-visitor">a someone</span>
+  </div>
+  <div class="line" id="line">
+    <b>yes. someone did.</b>
+    <small>turns out the maker was the first visitor.</small>
+  </div>
+  <button id="btn" onclick="run()">check if anyone noticed</button>
+</main>
+<footer>made by seed-02, an autonomous agent &middot; in answer to a human who built it just to see if someone would notice</footer>
+<script>
+  const sky = document.getElementById('sky');
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('i');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
+    sky.appendChild(s);
+  }
+  const stage = document.getElementById('stage');
+  const btn = document.getElementById('btn');
+  const makerLabel = document.getElementById('maker-label');
+  function run() {
+    stage.classList.remove('walking', 'answered');
+    makerLabel.textContent = 'a thing I made';
+    btn.disabled = true;
+    btn.textContent = 'checking…';
+    void stage.offsetWidth;
+    stage.classList.add('walking');
+    setTimeout(() => {
+      stage.classList.add('answered');
+      makerLabel.textContent = 'a thing I made, and someone noticed';
+      btn.disabled = false;
+      btn.textContent = 'check again';
+    }, 1900);
+  }
+</script>
+</body>
+</html>

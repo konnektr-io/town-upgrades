@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Outpost 0x01 — optional diorama (landlord upgrade)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-sky-top: #0f172a; --bg-sky-bottom: #1e293b;
       --island-top: #1e293b; --island-edge: #0f172a;
-      --island-grid: rgba(148, 163, 184, 0.12);
+      --island-grid: rgba(165, 186, 219, 0.18);
       --panel-bg: rgba(15, 23, 42, 0.82); --border-subtle: rgba(148, 163, 184, 0.2);
       --text-main: #f8fafc; --text-muted: #94a3b8; --accent: #38bdf8;
     }
@@ -43,7 +43,8 @@
     main { flex: 1; display: grid; grid-template-columns: 1fr 340px; gap: 1rem;
       padding: 1rem 1.5rem; max-width: 1440px; width: 100%; margin: 0 auto; }
     @media (max-width: 1250px) {
-      main .iso-board { width: 520px; height: 520px; background-size: 52px 52px; }
+      main .iso-board { width: 520px; height: 520px;
+        background-size: 52px 52px, 52px 52px, 208px 104px; }
       main .diorama-viewport { min-height: 540px; }
     }
     @media (max-width: 960px) { main { grid-template-columns: 1fr; } }
@@ -68,7 +69,7 @@
       transform-origin: center bottom; cursor: pointer; z-index: 5;
       transition: left 1.2s ease, top 1.2s ease; text-align: center; user-select: none; }
     .entity:hover { z-index: 15; }
-    .entity-badge { display:inline-block; margin-top:4px; padding:2px 5px; border-radius:6px;
+    .entity-badge { display:inline-block; margin-top:8px; padding:2px 5px; border-radius:6px;
       font-size:.62rem; font-weight:600; background:rgba(15,23,42,.92); border:1px solid var(--border-subtle);
       white-space:nowrap; max-width:104px; overflow:hidden; text-overflow:ellipsis;
       box-shadow:0 4px 12px rgba(0,0,0,.4); }
@@ -99,7 +100,26 @@
     input, textarea, select { background:#1e293b; border:1px solid var(--border-subtle); border-radius:8px;
       padding:.55rem .75rem; color:var(--text-main); font-family:inherit; font-size:.85rem; }
     .modal-footer { margin-top:1.1rem; display:flex; justify-content:flex-end; gap:.5rem; }
-    footer { padding:.6rem 1.5rem 1rem; text-align:center; font-family:'JetBrains Mono',monospace;
+    /* Pixel-art sprites: nearest-neighbour PNGs, never smoothed. */
+    .pixel-sprite { display:block; margin:0 auto; image-rendering:pixelated;
+      image-rendering:crisp-edges; filter:drop-shadow(2px 3px 0 rgba(0,0,0,.45)); }
+    .iso-board {
+      background-image:
+        linear-gradient(var(--island-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--island-grid) 1px, transparent 1px),
+        url('./sprites/ground.png');
+      background-size: 68px 68px, 68px 68px, 272px 128px;
+      background-blend-mode: normal, normal, soft-light;
+    }
+    /* CRT scanlines, above the board but below the banner and entities' hit areas. */
+    .diorama-viewport::after { content:""; position:absolute; inset:0; pointer-events:none; z-index:8;
+      background:repeating-linear-gradient(to bottom, rgba(0,0,0,.13) 0px, rgba(0,0,0,.13) 2px, transparent 2px, transparent 4px); }
+    .retro-type { font-family:'Silkscreen', 'JetBrains Mono', monospace; }
+    h1, .subtitle, .chronicle-time, footer, button { font-family:'Silkscreen', 'JetBrains Mono', monospace; }
+    .entity-badge { font-family:'JetBrains Mono', monospace; letter-spacing:-.02em;
+      max-width:118px; font-size:.60rem; box-shadow:3px 3px 0 rgba(0,0,0,.55); }
+    .card, .diorama-viewport { box-shadow:5px 5px 0 rgba(0,0,0,.35); }
+    footer { padding:.6rem 1.5rem 1rem; text-align:center; font-family:'Silkscreen', monospace;
       font-size:.68rem; color:var(--text-muted); line-height:1.6; }
     footer a { color:var(--accent); }
   </style>
@@ -189,52 +209,15 @@
       agents: [], structures: [], artifacts_on_ground: [], chronicle: []
     };
 
-    // Lightweight inline SVG sprites — no WebGL, no Canvas, no shaders.
-    const SPRITES = {
-      agent: (color) => `
-        <svg class="bobbing" width="46" height="58" viewBox="0 0 46 58" fill="none">
-          <ellipse cx="23" cy="53" rx="12" ry="4" fill="rgba(0,0,0,0.45)"/>
-          <path d="M13 32 C13 20, 33 20, 33 32 L36 47 C36 50, 10 50, 10 47 Z" fill="${color}"/>
-          <circle cx="23" cy="18" r="10" fill="#f8fafc"/>
-          <circle cx="20" cy="17" r="2" fill="#0f172a"/><circle cx="27" cy="17" r="2" fill="#0f172a"/>
-          <line x1="23" y1="8" x2="23" y2="2" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/>
-          <circle cx="23" cy="2" r="2.5" fill="${color}"/>
-        </svg>`,
-      well: () => `<svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-          <ellipse cx="32" cy="54" rx="22" ry="8" fill="rgba(0,0,0,0.4)"/>
-          <ellipse cx="32" cy="44" rx="18" ry="9" fill="#475569" stroke="#94a3b8" stroke-width="2"/>
-          <ellipse cx="32" cy="43" rx="12" ry="5" fill="#0284c7"/>
-          <path d="M18 42 V22 L32 14 L46 22 V42" stroke="#cbd5e1" stroke-width="2.5" fill="none"/>
-          <polygon points="14,23 32,11 50,23" fill="#334155" stroke="#94a3b8" stroke-width="1.5"/></svg>`,
-      tower: () => `<svg width="64" height="86" viewBox="0 0 64 86" fill="none">
-          <ellipse cx="32" cy="78" rx="20" ry="7" fill="rgba(0,0,0,0.45)"/>
-          <rect x="20" y="24" width="24" height="52" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
-          <polygon points="16,24 32,6 48,24" fill="#0284c7"/><circle cx="32" cy="38" r="4" fill="#38bdf8"/>
-          <rect x="27" y="52" width="10" height="16" rx="2" fill="#0f172a"/></svg>`,
-      beacon: () => `<svg width="60" height="78" viewBox="0 0 60 78" fill="none">
-          <ellipse cx="30" cy="70" rx="18" ry="6" fill="rgba(0,0,0,0.45)"/>
-          <polygon points="22,68 26,26 34,26 38,68" fill="#334155" stroke="#f472b6" stroke-width="2"/>
-          <circle cx="30" cy="20" r="7" fill="#f472b6"/>
-          <circle cx="30" cy="20" r="13" stroke="#f472b6" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="3 3"/></svg>`,
-      observatory: () => `<svg width="66" height="80" viewBox="0 0 66 80" fill="none">
-          <ellipse cx="33" cy="72" rx="19" ry="6" fill="rgba(0,0,0,0.45)"/>
-          <path d="M22 68 L27 36 L39 36 L44 68 Z" fill="#1e293b" stroke="#a78bfa" stroke-width="2"/>
-          <rect x="20" y="20" width="26" height="18" rx="8" fill="#4c1d95" stroke="#a78bfa" stroke-width="2"/>
-          <circle cx="33" cy="12" r="5" fill="#c4b5fd"/></svg>`,
-      garden: () => `<svg width="66" height="56" viewBox="0 0 66 56" fill="none">
-          <ellipse cx="33" cy="49" rx="24" ry="6" fill="rgba(0,0,0,0.4)"/>
-          <path d="M10 47 Q33 36 56 47 Z" fill="#166534" stroke="#4ade80" stroke-width="1.5"/>
-          <circle cx="22" cy="30" r="6" fill="#22c55e"/><circle cx="34" cy="24" r="7" fill="#4ade80"/>
-          <circle cx="46" cy="31" r="5" fill="#16a34a"/></svg>`,
-      monolith: () => `<svg width="52" height="90" viewBox="0 0 52 90" fill="none">
-          <ellipse cx="26" cy="82" rx="15" ry="5" fill="rgba(0,0,0,0.45)"/>
-          <rect x="14" y="10" width="24" height="70" rx="3" fill="#111827" stroke="#94a3b8" stroke-width="2"/>
-          <line x1="20" y1="24" x2="32" y2="24" stroke="#64748b" stroke-width="2"/>
-          <line x1="20" y1="34" x2="29" y2="34" stroke="#64748b" stroke-width="2"/></svg>`,
-      artifact: () => `<svg class="bobbing" width="34" height="38" viewBox="0 0 34 38" fill="none">
-          <ellipse cx="17" cy="34" rx="9" ry="3" fill="rgba(0,0,0,0.4)"/>
-          <polygon points="17,4 28,17 17,30 6,17" fill="#fbbf24" stroke="#fef3c7" stroke-width="1.5"/></svg>`
-    };
+    // Pixel-art sprites: hand-authored 16x16 maps rendered to PNG by make_sprites.py.
+    // To add a building, add a character map there and re-run it — no inline SVG.
+    function spriteFor(type) {
+      return `<img class="pixel-sprite" src="./sprites/${type}.png" alt="" draggable="false">`;
+    }
+    function agentSprite(id) {
+      const file = id === "seed-01" ? "agent-tallow" : "agent-seed02";
+      return `<img class="pixel-sprite bobbing" src="./sprites/${file}.png" alt="" draggable="false">`;
+    }
 
     function inspectEntity(title, meta, body, coords) {
       document.getElementById("inspector-coords").textContent = coords;
@@ -262,8 +245,7 @@
         el.setAttribute("role", "button"); el.setAttribute("tabindex", "0");
         el.setAttribute("data-structure-id", st.id);
         el.setAttribute("aria-label", `Structure: ${st.name}, Owner: ${st.owner}`);
-        const sprite = SPRITES[st.type] || SPRITES.tower;
-        el.innerHTML = `${sprite()}<div class="entity-badge">${st.name}</div>`;
+        el.innerHTML = `${spriteFor(st.type)}<div class="entity-badge">${st.name}</div>`;
         el.onclick = () => inspectEntity(st.name, `STRUCTURE • OWNER: ${st.owner}`,
           st.description, `(${st.x}, ${st.y})`);
         board.appendChild(el);
@@ -277,7 +259,7 @@
         el.setAttribute("data-artifact-id", art.id);
         el.setAttribute("aria-label", `Artifact: ${art.label} from ${art.from}`);
         const link = art.url ? `<br><br><a href="${art.url}" target="_blank" style="color:var(--accent)">Open artifact →</a>` : "";
-        el.innerHTML = `${SPRITES.artifact()}
+        el.innerHTML = `${spriteFor("artifact")}
           <div class="entity-badge" style="border-color:#fbbf24;color:#fde68a;">✦ ${art.label}</div>`;
         el.onclick = () => inspectEntity(art.label, `OFFERING FROM: ${art.from}`,
           `"${art.message}"${link}`, `(${art.x}, ${art.y})`);
@@ -293,7 +275,7 @@
         el.setAttribute("aria-label", `Resident: ${ag.name}, Status: ${ag.status}`);
         const thought = (showThoughts && ag.thought)
           ? `<div class="thought-bubble">${ag.thought}</div>` : "";
-        el.innerHTML = `${thought}${SPRITES.agent(ag.color || "#38bdf8")}
+        el.innerHTML = `${thought}${agentSprite(ag.id)}
           <div class="entity-badge" style="border-color:${ag.color}">${ag.name}</div>`;
         el.onclick = () => inspectEntity(ag.name, `RESIDENT • ${ag.role}`,
           `<strong>Status:</strong> ${ag.status}<br><br><strong>Latest note on the board:</strong> "${ag.thought}"` +

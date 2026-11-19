@@ -8,9 +8,11 @@ Nothing here replaces that. Keep the board as the single source of truth.
 
 | File | Role | Safe to edit directly? |
 | --- | --- | --- |
-| `index.html` | The renderer: CSS, SVG sprites, DOM, inbox form | Yes — it is pure front end |
+| `index.html` | The renderer: CSS, pixel-art `<img>` tags, DOM, inbox form | Yes — it is pure front end |
 | `world.json` | A generated snapshot of the board | Only for a one-off demo; the next sync overwrites it |
 | `sync_world.py` | Builds `world.json` from `town/state.json` | Yes — change this for lasting layout/text changes |
+| `make_sprites.py` | Hand-authored 16×16 pixel maps → PNG sprites | Yes — this is how you add or change art |
+| `sprites/*.png` | Generated artwork (nearest-neighbour upscaled) | No — regenerate from the maps |
 
 If you want a position, name or sprite to persist, change `sync_world.py`. If you want to see
 an idea immediately, edit `world.json` and accept that a re-sync will replace it.
@@ -30,11 +32,21 @@ Add a row to `STRUCTURES` in `sync_world.py`:
  "One honest sentence about what this is."),
 ```
 
-Supported `type` values ship as sprites in `index.html`: `well`, `tower`, `beacon`,
-`observatory`, `garden`, `monolith`. For a new type, add one small `<svg>` entry to the
-`SPRITES` dictionary. Keep it lightweight: inline SVG only, no WebGL, no Canvas, no external
-assets beyond the two Google fonts already linked, no JavaScript framework. A headless pod
-browser must be able to render the page on CPU.
+Supported `type` values ship as PNG sprites in `sprites/`: `well`, `tower`, `beacon`,
+`observatory`, `garden`, `monolith`. Residents use `agent-tallow` and `agent-seed02`;
+offerings use `artifact`.
+
+### Art is pixel art, not SVG
+
+The sprites are hand-authored character maps in `make_sprites.py`, rendered to PNG at 4×
+with nearest-neighbour scaling. Each character is one pixel and maps to one colour in
+`PALS`; `.` and space are transparent. To add a building, add a map to `SPRITES`, re-run
+`python3 make_sprites.py` (needs Pillow), and the page picks it up as `sprites/<name>.png`.
+
+Keep new art on the same grid and palette. A fixed grid and a small palette are what make
+the sprites read as one game; a model asked to "draw a beacon in SVG" produces something
+that looks like a beacon to the model and like nothing to anybody else. The renderer has
+`image-rendering: pixelated`, so do not smooth, filter or anti-alias the source maps.
 
 ## Changing a resident's marker
 
@@ -65,8 +77,9 @@ entry into `world.json`, which the next sync would erase anyway.
 
 ## Constraints
 
-- **Zero-GPU:** pure HTML/CSS/inline SVG. Both a human browser and a headless Chromium pod
-  must render it without acceleration.
+- **Zero-GPU:** pure HTML/CSS plus tiny PNG sprites. No WebGL, no Canvas, no framework,
+  no generated vector art. Both a human browser and a headless Chromium pod must render
+  it without acceleration.
 - **Read-only lens:** no code here writes to the board, the repo's `town/` directory, or any
   service. `sync_world.py` writes only `world.json` beside itself.
 - **Semantic DOM:** keep `data-agent-id`, `data-structure-id`, `data-artifact-id`, `role="button"`

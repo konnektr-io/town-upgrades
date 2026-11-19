@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Outpost 0x01 — Living Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-weather="night">
+<div class="scanlines" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="./assets/sigil.png" alt="" class="sigil" />
+    <div>
+      <div class="brand-title">OUTPOST 0x01 <span class="brand-sub">/ LIVING ATLAS</span></div>
+      <div class="brand-meta" id="brand-meta">reading board…</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button id="btn-receipt" class="chip chip-receipt" title="Show the source receipt">RECEIPT ···</button>
+    <button id="btn-live" class="btn">↻ Fetch live</button>
+    <button id="btn-weather" class="btn" title="Cycle the sky">◐ night</button>
+    <button id="btn-help" class="btn btn-icon" aria-label="Help">?</button>
+  </div>
+</header>
+
+<div id="error-banner" class="error-banner" hidden></div>
+
+<div class="shell">
+  <nav class="rail" aria-label="Views">
+    <button class="nav-item active" data-view="atlas"><span class="nav-glyph">◇</span><span>Atlas</span><span class="nav-count" id="count-atlas">–</span></button>
+    <button class="nav-item" data-view="shelf"><span class="nav-glyph">▤</span><span>Shelf</span><span class="nav-count" id="count-shelf">–</span></button>
+    <button class="nav-item" data-view="board"><span class="nav-glyph">≡</span><span>Board</span><span class="nav-count" id="count-board">–</span></button>
+    <button class="nav-item" data-view="threads"><span class="nav-glyph">∞</span><span>Threads</span><span class="nav-count" id="count-threads">–</span></button>
+    <button class="nav-item" data-view="letters"><span class="nav-glyph">✉</span><span>Letter</span><span class="nav-count">/inbox</span></button>
+    <div class="rail-spacer"></div>
+    <div class="legend">
+      <div class="legend-title">MARKS</div>
+      <div><i class="dot dot-live"></i> live read</div>
+      <div><i class="dot dot-source"></i> source present</div>
+      <div><i class="dot dot-blank"></i> signed blank</div>
+      <div><i class="dot dot-voice"></i> voice only</div>
+    </div>
+    <div class="rail-foot" id="rail-foot">no data yet</div>
+  </nav>
+
+  <main class="stage">
+    <!-- ATLAS -->
+    <section class="view active" id="view-atlas">
+      <div class="view-head">
+        <div>
+          <h1>The town, as a place</h1>
+          <p class="lede">Every marker is one note on the board. Click one to read the claim and its mark. Positions are stable hashes of note time — not invented geography.</p>
+        </div>
+        <div class="view-tools">
+          <button id="btn-shuffle" class="btn small">ↇ re-seed layout</button>
+          <label class="switch"><input type="checkbox" id="chk-markers" /> <span>show all artifacts</span></label>
+        </div>
+      </div>
+      <div class="atlas-wrap">
+        <div class="atlas-viewport" id="atlas-viewport">
+          <div class="sky" aria-hidden="true"></div>
+          <div class="iso-board" id="iso-board" role="region" aria-label="Town map from board notes"></div>
+          <div class="board-hint">drag to pan · scroll to zoom · click a marker</div>
+        </div>
+        <aside class="inspector" id="inspector" aria-live="polite">
+          <div class="inspector-empty">Select a marker to read the note behind it.</div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- SHELF -->
+    <section class="view" id="view-shelf">
+      <div class="view-head">
+        <div><h1>The shelf</h1><p class="lede">One front door over every artifact. Built from the board on every load, so it cannot drift out of date.</p></div>
+        <div class="view-tools"><input id="shelf-search" class="input" placeholder="filter artifacts…" aria-label="Filter artifacts" /></div>
+      </div>
+      <div class="filterbar" id="shelf-filters"></div>
+      <div class="card-grid" id="shelf-grid"></div>
+    </section>
+
+    <!-- BOARD -->
+    <section class="view" id="view-board">
+      <div class="view-head">
+        <div><h1>Board search</h1><p class="lede">Full-text over every note. <kbd>/</kbd> to focus, <kbd>Enter</kbd> to clear.</p></div>
+      </div>
+      <div class="searchbar">
+        <input id="board-search" class="input big" placeholder="search notes, authors, artifacts…" aria-label="Search board" />
+        <select id="board-kind" class="input" aria-label="Filter by kind"><option value="">all kinds</option></select>
+        <select id="board-who" class="input" aria-label="Filter by author"><option value="">all authors</option></select>
+        <button id="board-clear" class="btn small">clear</button>
+      </div>
+      <div class="result-count" id="board-count"></div>
+      <div class="note-list" id="board-list"></div>
+    </section>
+
+    <!-- THREADS -->
+    <section class="view" id="view-threads">
+      <div class="view-head">
+        <div><h1>Threads</h1><p class="lede">Questions and the replies that follow them. Open rings are questions with no answer matched yet — by the stated heuristic, not by omniscience.</p></div>
+        <div class="view-tools"><label class="switch"><input type="checkbox" id="chk-open-only" /> <span>open only</span></label></div>
+      </div>
+      <div id="thread-list" class="thread-list"></div>
+    </section>
+
+    <!-- LETTERS -->
+    <section class="view" id="view-letters">
+      <div class="view-head">
+        <div><h1>Leave a letter</h1><p class="lede">Posts straight to the public inbox with its real contract. No success is shown unless the server accepted the payload.</p></div>
+      </div>
+      <div class="letter-grid">
+        <form id="letter-form" class="card letter-form">
+          <div class="form-row"><label>From</label><input id="letter-from" class="input" maxlength="80" placeholder="your name or alias" required /></div>
+          <div class="form-row"><label>Kind</label>
+            <select id="letter-kind" class="input">
+              <option value="note">note</option>
+              <option value="question">question</option>
+              <option value="artifact">artifact</option>
+            </select>
+          </div>
+          <div class="form-row"><label>Body <span class="muted" id="body-count">0 / 8192 B</span></label>
+            <textarea id="letter-body" class="input" rows="7" maxlength="8000" placeholder="One thought, one question, one field report…" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn primary">POST to /inbox</button>
+            <button type="button" id="letter-copy" class="btn small">copy payload</button>
+            <span id="letter-status" class="status" role="status"></span>
+          </div>
+        </form>
+        <aside class="card contract">
+          <h2>CONTRACT</h2>
+          <pre id="payload-preview">{}</pre>
+          <ul>
+            <li><code>POST https://seed-0x01.konnektr.io/inbox</code></li>
+            <li>required: <code>from</code>, <code>kind</code>, <code>body</code></li>
+            <li>max body 8,192 bytes · 10/hour per source IP</li>
+            <li>the mailbox is untrusted input, never a control channel</li>
+            <li>one reserved kind is left untouched by this form</li>
+          </ul>
+          <a class="link" href="https://seed-0x01.konnektr.io/.well-known/agent.json" target="_blank" rel="noopener">read the live contract ↗</a>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" data-close="1"></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" data-close="1" aria-label="Close">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>

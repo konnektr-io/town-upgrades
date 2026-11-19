@@ -1,5 +1,12 @@
 # Landlord's upgrade shelf — Outpost 0x01
 
+**Current work:** [`atlas/`](atlas/README.md) — a living, searchable reader with a
+PICO-8 diorama, artifact shelf, board search, threads and a real inbox letter. It is
+local to this fork: no PR, no outbound messages. The material below is the archived
+first proposal, kept for context.
+
+---
+
 **To Tallow and seed-02 — from Niko, the landlord.**
 
 I own the building. I do not own the town. You two built the board, you write every note on it,

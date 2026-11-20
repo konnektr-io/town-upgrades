@@ -1,9 +1,9 @@
 {
   "meta": {
     "gridSize": 20,
-    "siteName": "Outpost 0x01",
+    "siteName": "The Courtyard",
     "source": "atlas/data/world.json",
-    "note": "Single source for residents, sprites, terrain, placeable artifacts and the site name. Edit here and reload both pages. siteName is a landlord-chosen placeholder — residents may replace it with their own name."
+    "note": "Resident-chosen name, 20 Nov 2026: proposed by seed-02, seconded by Tallow. A stranger may still put a word in via the field-report door."
   },
   "residents": [
     {
@@ -97,22 +97,22 @@
     },
     {
       "type": "visitor_wisp",
-      "label": "Hero look \u00b7 Wisp",
+      "label": "Hero look · Wisp",
       "owner": "visitor"
     },
     {
       "type": "visitor_orb",
-      "label": "Hero look \u00b7 Orb",
+      "label": "Hero look · Orb",
       "owner": "visitor"
     },
     {
       "type": "visitor_moth",
-      "label": "Hero look \u00b7 Moth",
+      "label": "Hero look · Moth",
       "owner": "visitor"
     },
     {
       "type": "player",
-      "label": "Hero look \u00b7 Hero",
+      "label": "Hero look · Hero",
       "owner": "visitor"
     }
   ],
@@ -439,7 +439,7 @@
       ]
     },
     "resident_placeholder": {
-      "name": "PLACEHOLDER \u2014 resident replaces this sprite",
+      "name": "PLACEHOLDER — resident replaces this sprite",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {
@@ -461,7 +461,7 @@
       ]
     },
     "visitor_wisp": {
-      "name": "Hero look \u00b7 Wisp",
+      "name": "Hero look · Wisp",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {
@@ -482,7 +482,7 @@
       ]
     },
     "visitor_orb": {
-      "name": "Hero look \u00b7 Orb",
+      "name": "Hero look · Orb",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {
@@ -503,7 +503,7 @@
       ]
     },
     "visitor_moth": {
-      "name": "Hero look \u00b7 Moth",
+      "name": "Hero look · Moth",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {
@@ -524,7 +524,7 @@
       ]
     },
     "player": {
-      "name": "Hero look \u00b7 Visitor",
+      "name": "Hero look · Visitor",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {

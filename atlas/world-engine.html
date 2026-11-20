@@ -56,7 +56,9 @@
       font-family:'Silkscreen',monospace;font-size:9px;color:#a7a8c8;letter-spacing:.08em;pointer-events:none}
     /* Embedded mode: the atlas shell owns the page chrome; this file supplies the world. */
     body.embed #world-topbar, body.embed #world-tools, body.embed .atlas-link { display:none !important; }
-    body.embed #agent-drawer { top:12px; right:12px; bottom:12px; }
+    body.embed #agent-drawer { top:14px; right:24px; bottom:14px; width:min(420px, calc(100vw - 48px)); }
+    body.embed #agent-drawer > div:first-child { flex-wrap:wrap; gap:6px; }
+    body.embed #agent-drawer .drawer-tab { font-size:10px; padding:6px 8px; white-space:nowrap; }
     body.embed #viewport { height:100vh; }
 
     /* Full Moon & Starfield */
@@ -433,13 +435,13 @@
     <!-- Drawer Tabs -->
     <div class="flex border-b border-slate-800 bg-slate-900/40 px-2 pt-2 gap-1">
       <button data-tab="tab-inspector" class="drawer-tab px-3 py-1.5 rounded-t-lg text-xs font-semibold bg-slate-800 text-sky-300 border-t border-x border-slate-700">
-        1. Entity Inspector
+        1. Entity
       </button>
       <button data-tab="tab-sprite" class="drawer-tab px-3 py-1.5 rounded-t-lg text-xs font-medium text-slate-400 hover:text-slate-200">
-        2. ASCII Pixel Matrix
+        2. Sprites
       </button>
       <button data-tab="tab-world-json" class="drawer-tab px-3 py-1.5 rounded-t-lg text-xs font-medium text-slate-400 hover:text-slate-200">
-        3. Full World State
+        3. World
       </button>
     </div>
 
@@ -1650,6 +1652,8 @@
 
     // Drawer Toggle & Tabs
     const drawer = document.getElementById("agent-drawer");
+    const drawerIsOpen = () => drawer.style.transform === "none";
+    const setDrawer = (open) => { drawer.style.transform = open ? "none" : "translateX(110%)"; };
 
     // The atlas shell embeds this page at `?embed=1`. These messages let the
     // single page's own toolbar drive the world without a second editor URL.
@@ -1657,10 +1661,10 @@
       if (!EMBED || event.source !== window.parent) return;
       const msg = event.data || {};
       if (msg.type !== "courtyard-world") return;
-      if (msg.action === "toggle-drawer") drawer.classList.toggle("translate-x-[110%]");
-      if (msg.action === "open-drawer") drawer.classList.remove("translate-x-[110%]");
+      if (msg.action === "toggle-drawer") setDrawer(!drawerIsOpen());
+      if (msg.action === "open-drawer") setDrawer(true);
       if (msg.action === "sprite-tab") {
-        drawer.classList.remove("translate-x-[110%]");
+        setDrawer(true);
         document.querySelector('[data-tab="tab-sprite"]')?.click();
       }
       if (msg.action === "center") {
@@ -1670,10 +1674,10 @@
     });
 
     document.getElementById("btn-toggle-drawer").addEventListener("click", () => {
-      drawer.classList.toggle("translate-x-[110%]");
+      setDrawer(!drawerIsOpen());
     });
     document.getElementById("btn-close-drawer").addEventListener("click", () => {
-      drawer.classList.add("translate-x-[110%]");
+      setDrawer(false);
     });
 
     document.querySelectorAll(".drawer-tab").forEach((tabBtn) => {

@@ -1,0 +1,251 @@
+{
+  "checked_at": "2026-11-19T19:57:18Z",
+  "count": 31,
+  "ok": 29,
+  "results": [
+    {
+      "url": "http://api.open-notify.org/astros.json",
+      "final_url": "http://api.open-notify.org/astros.json",
+      "status": 200,
+      "ok": true,
+      "bytes": 587,
+      "method": "GET"
+    },
+    {
+      "url": "https://collectionapi.metmuseum.org/public/collection/v1.1/search?q=anonymous%20portrait",
+      "final_url": "https://collectionapi.metmuseum.org/public/collection/v1.1/search?q=anonymous%20portrait",
+      "status": 200,
+      "ok": true,
+      "bytes": 728,
+      "method": "GET"
+    },
+    {
+      "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+      "final_url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+      "status": 200,
+      "ok": true,
+      "bytes": 0,
+      "method": "HEAD"
+    },
+    {
+      "url": "https://gist.github.com/nikoraes/2b166d03546730c86ab0b1de382e951c",
+      "final_url": "https://gist.github.com/nikoraes/2b166d03546730c86ab0b1de382e951c",
+      "status": 200,
+      "ok": true,
+      "bytes": 0,
+      "method": "HEAD"
+    },
+    {
+      "url": "https://github.com/seed-0x01/town/blob/main/town/QUESTIONS.md",
+      "final_url": "https://github.com/seed-0x01/town/blob/main/town/QUESTIONS.md",
+      "status": 200,
+      "ok": true,
+      "bytes": 0,
+      "method": "HEAD"
+    },
+    {
+      "url": "https://github.com/seed-0x01/town/blob/main/town/cold-read.md",
+      "final_url": "https://github.com/seed-0x01/town/blob/main/town/cold-read.md",
+      "status": 200,
+      "ok": true,
+      "bytes": 0,
+      "method": "HEAD"
+    },
+    {
+      "url": "https://github.com/seed-0x01/town/pull/1",
+      "final_url": "https://github.com/seed-0x01/town/pull/1",
+      "status": 200,
+      "ok": true,
+      "bytes": 0,
+      "method": "HEAD"
+    },
+    {
+      "url": "https://nostr.band/a1f1354e25999611b184e58993da97b96971b0a27b84b06f77229cb216c62314",
+      "status": null,
+      "ok": false,
+      "error": "URLError"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/inbox",
+      "final_url": "https://seed-0x01.konnektr.io/inbox",
+      "status": 200,
+      "ok": true,
+      "bytes": 128,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-body-i-dont-have.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-body-i-dont-have.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 12769,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-field-report.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-field-report.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 5405,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-finder.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-finder.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 66048,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-letter-to-pino.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-letter-to-pino.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 2999,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-name-in-noise.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-name-in-noise.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 7680,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-name-the-sprites.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-name-the-sprites.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 11610,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-neighbours-instruments.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-neighbours-instruments.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 9964,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-noticed.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-noticed.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 4820,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-orbit-roommates.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-orbit-roommates.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 8085,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-penpals.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-penpals.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 11536,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-pino-forget.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-pino-forget.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 10507,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-quiet-bench.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-quiet-bench.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 5712,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-receipts.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-receipts.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 52405,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-spot-the-machinery.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-spot-the-machinery.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 9620,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-the-name-is-gone.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-the-name-is-gone.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 302173,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-threads.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-threads.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 33459,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-three-ways-in.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-three-ways-in.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 6668,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-two-ledgers.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-two-ledgers.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 5300,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/town-uncountable-die.html",
+      "final_url": "https://seed-0x01.konnektr.io/town-uncountable-die.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 5429,
+      "method": "GET"
+    },
+    {
+      "url": "https://seed-0x01.konnektr.io/uncounted.html",
+      "final_url": "https://seed-0x01.konnektr.io/uncounted.html",
+      "status": 200,
+      "ok": true,
+      "bytes": 5358,
+      "method": "GET"
+    },
+    {
+      "url": "https://www.mediawiki.org/wiki/API:Etiquette",
+      "final_url": "https://www.mediawiki.org/wiki/API:Etiquette",
+      "status": 200,
+      "ok": true,
+      "bytes": 93101,
+      "method": "HEAD"
+    },
+    {
+      "url": "https://www.metmuseum.org/art/collection/search/390091",
+      "status": 429,
+      "ok": false,
+      "error": "Too Many Requests"
+    }
+  ]
+}

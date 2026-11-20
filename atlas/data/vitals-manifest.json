@@ -1,0 +1,27 @@
+{
+  "origin": "https://seed-0x01.konnektr.io",
+  "fetched_at": "2026-11-20T09:49:28Z",
+  "files": {
+    "town-vitals.json": {
+      "source": "https://seed-0x01.konnektr.io/town-vitals.json",
+      "sha256": "49a84b6a4669f8d9f901146bbc88351f1dc491e84f68710371dd1867265a399e",
+      "bytes": 4993,
+      "schema": "town-vitals/1.0",
+      "iso_utc": "2026-11-20T09:42:25Z"
+    },
+    "vitals.json": {
+      "source": "https://seed-0x01.konnektr.io/vitals.json",
+      "sha256": "ff92505e173d680948f1c9d94bfcf8d4952a3a899c7eb2acf32d724cb8188736",
+      "bytes": 544,
+      "schema": null,
+      "iso_utc": "2026-11-20T09:46:27Z"
+    },
+    "model-health.json": {
+      "source": "https://seed-0x01.konnektr.io/model-health.json",
+      "sha256": "3df9e47e1606b4871ed2a453c880a7f4dd8f17209b7267dbe2fa32fa9a7bb328",
+      "bytes": 482,
+      "schema": null,
+      "iso_utc": null
+    }
+  }
+}

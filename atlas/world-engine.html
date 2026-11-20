@@ -1653,7 +1653,13 @@
     // Drawer Toggle & Tabs
     const drawer = document.getElementById("agent-drawer");
     const drawerIsOpen = () => drawer.style.transform === "none";
-    const setDrawer = (open) => { drawer.style.transform = open ? "none" : "translateX(110%)"; };
+    const postDrawerState = () => {
+      try { window.parent?.postMessage({ type: "courtyard-world-state", open: drawerIsOpen() }, "*"); } catch (_) {}
+    };
+    const setDrawer = (open) => {
+      drawer.style.transform = open ? "none" : "translateX(110%)";
+      postDrawerState();
+    };
 
     // The atlas shell embeds this page at `?embed=1`. These messages let the
     // single page's own toolbar drive the world without a second editor URL.

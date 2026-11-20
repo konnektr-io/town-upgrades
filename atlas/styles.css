@@ -82,7 +82,8 @@ kbd{font-family:var(--font-mono);background:var(--panel2);border:1px solid var(-
 .world-label{display:flex;flex-direction:column;gap:2px;background:rgba(10,13,28,.82);border:1px solid var(--line);border-radius:5px;padding:8px 11px;backdrop-filter:blur(6px)}
 .world-label #world-title{font-family:var(--font-pixel);font-size:16px;color:var(--text);line-height:1.2}
 .world-sub{font-size:10px;color:var(--muted);letter-spacing:.04em}
-.world-overlay .view-tools{background:rgba(10,13,28,.82);border:1px solid var(--line);border-radius:5px;padding:6px;backdrop-filter:blur(6px)}
+.world-overlay .view-tools{background:rgba(10,13,28,.82);border:1px solid var(--line);border-radius:5px;padding:6px;backdrop-filter:blur(6px);transition:opacity .15s ease}
+.world-overlay .view-tools.is-drawer-open{opacity:0;pointer-events:none}
 @media(max-width:720px){.world-shell{height:calc(100vh - 260px);min-height:180px;margin:-8px -10px -20px}.world-overlay{top:6px;left:6px;right:6px;gap:4px;flex-wrap:wrap}.world-label #world-title{font-size:12px}}
 .atlas-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:stretch}
 .atlas-viewport{position:relative;min-height:780px;border:1px solid var(--line);border-radius:6px;overflow:hidden;

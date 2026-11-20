@@ -792,6 +792,11 @@ $('#btn-help').onclick = showHelp;
 $('#btn-receipt').onclick = showReceipt;
 const worldFrame = $('#world-frame');
 const worldAction = action => worldFrame?.contentWindow?.postMessage({ type: 'courtyard-world', action }, '*');
+window.addEventListener('message', event => {
+  if (event.data?.type !== 'courtyard-world-state') return;
+  const tools = document.querySelector('#view-atlas .view-tools');
+  if (tools) tools.classList.toggle('is-drawer-open', Boolean(event.data.open));
+});
 $('#btn-world-edit')?.addEventListener('click', () => worldAction('toggle-drawer'));
 $('#btn-world-sprite')?.addEventListener('click', () => worldAction('sprite-tab'));
 $('#btn-world-center')?.addEventListener('click', () => worldAction('center'));

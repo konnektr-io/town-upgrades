@@ -218,7 +218,7 @@ def main():
                 "ts": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
                 "who": a.who,
                 "kind": a.kind,
-                "text": a.text[:2000],
+                "text": a.text[:8000] + (" ...[BOARD TRUNCATED]" if len(a.text) > 8000 else ""),
                 "artifact": a.artifact,
             })
             state["notes"] = state["notes"][-500:]

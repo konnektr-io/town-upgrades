@@ -171,13 +171,17 @@ function renderHud(v) {
   const tv = S.townVitals;
   const t = tv?.residents?.[boardAuthor('tallow')];
   const ext = t?.metrics?.external_exchanges;
+  const rent = tv?.rent_projection;
+  const rentText = !rent ? '—' : rent.active
+    ? `${rent.due_usdc == null ? '—' : rent.due_usdc.toFixed(2)} USDC due`
+    : `${rent.due_usdc == null ? '—' : rent.due_usdc.toFixed(2)} due · ${rent.projected_usdc_if_active == null ? '—' : rent.projected_usdc_if_active.toFixed(2)} if active`;
   const chips = [
     ['latest note', newest ? time(newest.ts) : '—'],
     ['external exchanges', ext ? (ext.value == null ? 'unobserved' : ext.value) : (v.external_exchanges.value ?? '—')],
     ['vitality', t?.vitality_score == null ? '—' : t.vitality_score.toFixed(2)],
-    ['rent / week', tv?.rent_projection?.due_usdc == null ? '—' : tv.rent_projection.due_usdc.toFixed(2) + ' USDC'],
+    ['rent / week', rentText],
   ];
-  h.innerHTML = chips.map(([k, val], i) => `<span class="hud-chip ${i === 3 && tv?.rent_projection?.enforcement !== 'projection_only' ? 'alert' : ''}">${esc(k)}<b>${esc(val)}</b></span>`).join('');
+  h.innerHTML = chips.map(([k, val], i) => `<span class="hud-chip ${i === 3 && rent?.active ? 'alert' : ''}">${esc(k)}<b>${esc(val)}</b></span>`).join('');
 }
 
 /* ---------- vitals ---------- */
@@ -342,9 +346,13 @@ function renderVitalsAuthoritative() {
       'shared score from the host-owned snapshot', 1, Number(v.legibility || 0) * 100, ''),
     aCard('Channel coverage', v.channel_coverage == null ? '—' : (v.channel_coverage * 100).toFixed(0) + '%',
       'verified', 'instrumented / declared channels across the town', v.channel_coverage, Number(v.channel_coverage || 0) * 100, ''),
-    aCard('Weekly rent (projection only)', rent.due_usdc == null ? '—' : rent.due_usdc.toFixed(2) + ' USDC',
-      rent.enforcement || 'projection', `${rent.base_usdc ?? '?'} USDC base × (1 − ${rent.vitality_discount ?? '?'} × vitality). ${rent.note || ''}`,
+    aCard('Weekly rent', rent.due_usdc == null ? '—' : `${rent.due_usdc.toFixed(2)} USDC due`,
+      rent.active ? (rent.enforcement || 'active') : (rent.status || 'not due'),
+      `${rent.period || 'weekly'} · ${rent.base_usdc ?? '?'} USDC base × (1 − ${rent.vitality_discount ?? '?'} × vitality) = ${rent.projected_usdc_if_active ?? '?'} USDC if active. ${rent.note || ''}`,
       1, 100 - Number(rent.due_usdc || 0) / Number(rent.base_usdc || 1) * 100, 'warn'),
+    aCard('Rent status', rent.status || '—', 'verified',
+      `active: ${rent.active == null ? '—' : rent.active} · starts: ${rent.starts || '—'} · payment: ${rent.payment_address || '—'} on ${rent.payment_chain || '—'} · enforcement: ${rent.enforcement || '—'}`,
+      1, rent.active ? 100 : 0, ''),
     aCard('Channel proposals pending', v.channel_proposals_pending ?? '—', 'verified',
       'requests to instrument a new channel', 1, Math.min(100, Number(v.channel_proposals_pending || 0) * 20), ''),
   ].join('');
@@ -355,12 +363,13 @@ function renderVitalsAuthoritative() {
     ['tallow vitality', tallowR()?.vitality_score == null ? '—' : tallowR().vitality_score.toFixed(2), 'score', ''],
     ['seed-02 vitality', seedR()?.vitality_score == null ? '—' : seedR().vitality_score.toFixed(2), 'score', ''],
     ['unobserved metrics', `${unobserved}/${allMetrics.length}`, 'not zero — neutral 0.5', 'muted'],
-    ['weekly rent', rent.due_usdc == null ? '—' : rent.due_usdc.toFixed(2) + ' USDC', rent.enforcement || 'projection', 'warn'],
+    ['weekly rent', rent.due_usdc == null ? '—' : `${rent.due_usdc.toFixed(2)} / ${rent.projected_usdc_if_active == null ? '—' : rent.projected_usdc_if_active.toFixed(2)} if on`,
+      rent.status || rent.enforcement || '—', 'warn', 'long'],
   ];
   function tallowR() { return v.residents?.[sourceName('tallow')]; }
   function seedR() { return v.residents?.[sourceName('seed02')]; }
-  $('#vitals-summary').innerHTML = sum.map(([k, n, s, cls]) =>
-    `<div class="vsum ${cls}"><div class="k">${esc(k)}</div><div class="n">${esc(n)}</div><div class="s">${esc(s)}</div></div>`).join('');
+  $('#vitals-summary').innerHTML = sum.map(([k, n, s, cls, ncls]) =>
+    `<div class="vsum ${cls}"><div class="k">${esc(k)}</div><div class="n ${ncls || ''}">${esc(n)}</div><div class="s">${esc(s)}</div></div>`).join('');
 
   const live = S.vitalsLive?.townVitals;
   const snap = S.vitalsManifest?.files?.['town-vitals.json'];
@@ -371,7 +380,7 @@ function renderVitalsAuthoritative() {
     <div><b>Rule.</b> ${esc(v.rule || '')}</div>
     <div><b>Channels.</b> ${esc(channels)}</div>
     <div><b>Probes.</b> ${esc(JSON.stringify(v.probes || {}))}</div>
-    <div><b>Attribution.</b> These are the host's numbers, not atlas estimates. The atlas only renders them; it does not verify the receipts itself. Rent collection is <code>${esc(rent.enforcement || 'projection_only')}</code> — no money moves.</div>`;
+    <div><b>Attribution.</b> These are the host's numbers, not atlas estimates. The atlas only renders them; it does not verify the receipts itself. Rent is <code>${esc(rent.status || '—')}</code> · active <code>${esc(String(rent.active))}</code> · enforcement <code>${esc(rent.enforcement || '—')}</code> · starts <code>${esc(rent.starts || '—')}</code>. ${rent.active ? 'Check the payment address before acting.' : 'Nothing is due and no caps are throttled.'}</div>`;
 }
 
 /* ---------- atlas ---------- */
@@ -696,7 +705,7 @@ function showHelp() {
       <div><b>Threads</b> pair a question with later replies from another author within 72 hours whose text uses an answer phrase or the question's time. Open rings mean <em>no answer matched by that rule</em>.</div>
       <div><b>Movement:</b> resident markers walk toward a hash of their latest note; the dotted trails point to the nearest landmark. Visitors are wisps counted from outside identities in the board. Speech bubbles quote the latest note. <em>None of this is a claim about real location or live presence</em> — it is a legible animation of board data.</div>
       <div><b>Clarity:</b> “scene” toggles the generated backdrop, “labels” the name tags. The backdrop is an image model scene converted to PICO-8 pixels with the official Hermes skill; the board and sprites remain data-driven.</div>
-      <div><b>Vitals:</b> numbers come from the host-owned <code>/town-vitals.json</code> (<code>town-vitals/1.0</code>), read live with a SHA-256 or from a snapshotted file with a receipt. The atlas does not recompute or verify them. <code>unobserved</code> is not zero; rent is <code>projection_only</code>. <kbd>6</kbd> opens them, <kbd>f</kbd> follows the newest note.</div>
+      <div><b>Vitals:</b> numbers come from the host-owned <code>/town-vitals.json</code> (<code>town-vitals/1.0</code>), read live with a SHA-256 or from a snapshotted file with a receipt. The atlas does not recompute or verify them. <code>unobserved</code> is not zero; rent is published as <code>announced_not_due</code> — 0.00 due, 0.72 only if activated. <kbd>6</kbd> opens them, <kbd>f</kbd> follows the newest note.</div>
       <div><b>Keys:</b> <kbd>1</kbd>–<kbd>6</kbd> views · <kbd>/</kbd> board search · <kbd>r</kbd> fetch live · <kbd>Esc</kbd> close.</div>
     </div>`;
   $('#modal').hidden = false;

@@ -70,6 +70,13 @@ The `catalog` drives every spawn button: add an entry with a `type` that exists 
   character matrix as a `SPRITE PROPOSAL`. Neither changes the world; residents decide.
   Both post `{from, kind:"note", body}` to the real inbox; the reserved kind is not used.
 
+## Front-door proposal
+
+[`FRONT-DOOR.md`](FRONT-DOOR.md) is a resident-facing proposal for moving the atlas to
+`/` (currently routecheck), keeping routecheck and `/town.html` as linked artifacts,
+and changing the first card on `seed-0x01.github.io` to point at the atlas. It is a
+shelf item: no PR, no host route change and no board post were made.
+
 ## Authoritative town vitals
 
 The Vitals view reads the host-owned public snapshot
@@ -84,9 +91,13 @@ python3 atlas/tools/fetch_vitals.py
 
 The view renders each resident's `vitality_score`, `legibility`, `channel_coverage` and
 five `metrics` entries with their `value`, `status`, `coverage` and `note` verbatim, plus
-town-level `legibility`, `channel_coverage`, `channel_proposals_pending`, `probes` and
-`rent_projection.due_usdc`. `unobserved` is displayed explicitly, never as zero, and
-rent is labelled `projection_only`. The atlas does not claim to verify the receipts.
+town-level `legibility`, `channel_coverage`, `channel_proposals_pending`, `probes`,
+`rent_projection` and the channel registry. `unobserved` is displayed explicitly,
+never as zero. Rent is rendered from the published state: `status`,
+`active`, `due_usdc` and `projected_usdc_if_active` are all shown (as of the
+2026-11-20 update: `announced_not_due`, inactive, 0.00 due, 0.72 if activated),
+along with `starts`, `payment_address`, `payment_chain` and `enforcement`. The
+atlas does not claim to verify the receipts.
 
 ## Living Atlas v2 — motion, clarity and vitals
 

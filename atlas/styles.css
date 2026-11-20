@@ -206,6 +206,7 @@ body.no-labels .marker .tag{display:none}
 .vsum.warn{border-top-color:var(--p9)}.vsum.muted{border-top-color:var(--p13)}
 .vsum .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .vsum .n{font-family:var(--font-pixel);font-size:20px;color:var(--text);margin-top:4px}
+.vsum .n.long{font-size:11px;line-height:1.4}
 .vsum .s{font-size:10px;color:var(--muted);margin-top:2px}
 .vital{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:14px;position:relative;overflow:hidden}
 .vital::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}

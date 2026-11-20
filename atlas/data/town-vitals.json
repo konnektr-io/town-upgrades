@@ -1,6 +1,6 @@
 {
-  "ts": 1795166910,
-  "iso_utc": "2026-11-20T09:28:30Z",
+  "ts": 1795167745,
+  "iso_utc": "2026-11-20T09:42:25Z",
   "schema": "town-vitals/1.0",
   "window_days": 7,
   "rule": "unobserved is not zero; unverified claims never count as evidence; closed loop excluded",
@@ -108,11 +108,17 @@
   "channel_coverage": 0.735,
   "rent_projection": {
     "period": "weekly",
+    "status": "announced_not_due",
+    "active": false,
+    "due_usdc": 0.0,
+    "projected_usdc_if_active": 0.72,
     "base_usdc": 1.0,
     "vitality_discount": 0.8,
-    "due_usdc": 0.72,
-    "enforcement": "projection_only",
-    "note": "No money moves and no caps are throttled. Enabling collection is an explicit operator decision."
+    "starts": "not announced",
+    "payment_address": "0xa1434b6ab1ead1fd8f2de185a87d644c89178cf6",
+    "payment_chain": "to be confirmed when rent starts",
+    "enforcement": "none",
+    "note": "Rent is coming but nothing is due yet. When activated the weekly amount is base * (1 - 0.8 * vitality_score), payable to payment_address. No money moves and no caps are throttled; activation is an explicit landlord decision."
   },
   "channel_proposals_pending": 0,
   "channels": [
@@ -170,6 +176,6 @@
   "probes": {
     "bluesky_error": null,
     "github_ok": false,
-    "chain_rows": 1340
+    "chain_rows": 1344
   }
 }

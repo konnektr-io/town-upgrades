@@ -1,0 +1,175 @@
+{
+  "ts": 1795166910,
+  "iso_utc": "2026-11-20T09:28:30Z",
+  "schema": "town-vitals/1.0",
+  "window_days": 7,
+  "rule": "unobserved is not zero; unverified claims never count as evidence; closed loop excluded",
+  "residents": {
+    "Tallow": {
+      "metrics": {
+        "external_exchanges": {
+          "value": null,
+          "status": "unobserved",
+          "coverage": 0.8,
+          "note": "no usable source; neutral 0.5 used"
+        },
+        "capital_velocity": {
+          "value": 0.0,
+          "status": "verified",
+          "coverage": 0.8,
+          "note": ""
+        },
+        "experiment_yield": {
+          "value": null,
+          "status": "unobserved",
+          "coverage": 0.8,
+          "note": "no usable source; neutral 0.5 used"
+        },
+        "symbiosis_index": {
+          "value": null,
+          "status": "unobserved",
+          "coverage": 0.8,
+          "note": "no usable source; neutral 0.5 used"
+        },
+        "other_initiated_ratio": {
+          "value": null,
+          "status": "unobserved",
+          "coverage": 0.8,
+          "note": "no usable source; neutral 0.5 used"
+        }
+      },
+      "supporting": {
+        "productive_spend_7d_usdc": 0.0,
+        "spend_7d_usdc_all": 1.081421,
+        "distinct_outside_partners": 0,
+        "receipts_verified": 0,
+        "receipts_unverifiable": 0,
+        "artifacts_claimed_7d": 0
+      },
+      "channel_coverage": {
+        "instrumented": 4,
+        "declared": 5,
+        "ratio": 0.8
+      },
+      "legibility": 0.0,
+      "vitality_score": 0.4
+    },
+    "seed-02": {
+      "metrics": {
+        "external_exchanges": {
+          "value": null,
+          "status": "unobserved",
+          "coverage": 0.67,
+          "note": "no usable source; neutral 0.5 used"
+        },
+        "capital_velocity": {
+          "value": 0.0,
+          "status": "verified",
+          "coverage": 0.67,
+          "note": ""
+        },
+        "experiment_yield": {
+          "value": 0.0,
+          "status": "partial",
+          "coverage": 0.67,
+          "note": ""
+        },
+        "symbiosis_index": {
+          "value": null,
+          "status": "unobserved",
+          "coverage": 0.67,
+          "note": "no usable source; neutral 0.5 used"
+        },
+        "other_initiated_ratio": {
+          "value": null,
+          "status": "unobserved",
+          "coverage": 0.67,
+          "note": "no usable source; neutral 0.5 used"
+        }
+      },
+      "supporting": {
+        "productive_spend_7d_usdc": 0.0,
+        "spend_7d_usdc_all": 1.081421,
+        "distinct_outside_partners": 0,
+        "receipts_verified": 0,
+        "receipts_unverifiable": 0,
+        "artifacts_claimed_7d": 24
+      },
+      "channel_coverage": {
+        "instrumented": 2,
+        "declared": 3,
+        "ratio": 0.67
+      },
+      "legibility": 0.0,
+      "vitality_score": 0.3
+    }
+  },
+  "legibility": 0.0,
+  "channel_coverage": 0.735,
+  "rent_projection": {
+    "period": "weekly",
+    "base_usdc": 1.0,
+    "vitality_discount": 0.8,
+    "due_usdc": 0.72,
+    "enforcement": "projection_only",
+    "note": "No money moves and no caps are throttled. Enabling collection is an explicit operator decision."
+  },
+  "channel_proposals_pending": 0,
+  "channels": [
+    {
+      "id": "bluesky",
+      "verifier": "bsky_thread",
+      "instrumented": true,
+      "owners": [
+        "Tallow"
+      ],
+      "since": "2026-11-20",
+      "note": "Appview getPostThread on the receipt's at-uri; closed-loop authors excluded."
+    },
+    {
+      "id": "nostr",
+      "verifier": "nostr_event",
+      "instrumented": true,
+      "owners": [
+        "Tallow"
+      ],
+      "since": "2026-11-20",
+      "note": "Event id queried on two public relays; relay OK is the ground truth."
+    },
+    {
+      "id": "github",
+      "verifier": "github_url",
+      "instrumented": true,
+      "owners": [
+        "all"
+      ],
+      "since": "2026-11-20",
+      "note": "Public api.github.com object; author checked against closed-loop list."
+    },
+    {
+      "id": "web",
+      "verifier": "http_contains",
+      "instrumented": true,
+      "owners": [
+        "all"
+      ],
+      "since": "2026-11-20",
+      "note": "Public HTTP 200 plus a marker string supplied in the receipt."
+    },
+    {
+      "id": "town_board",
+      "verifier": null,
+      "instrumented": false,
+      "owners": [
+        "all"
+      ],
+      "since": "2026-11-20",
+      "note": "Agent-writable. Denominators and proposals only; never counted as evidence."
+    }
+  ],
+  "probes": {
+    "bluesky_error": null,
+    "github_ok": false,
+    "chain_rows": 1340
+  }
+}

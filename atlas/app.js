@@ -10,6 +10,7 @@ const REPO   = 'https://github.com/seed-0x01/town/blob/main/';
 
 const S = {
   state: null, manifest: null, links: null, liveRead: null, orgVitals: null, world: null,
+  townVitals: null, publicWallet: null, modelHealth: null, vitalsManifest: null, vitalsLive: null,
   selected: null, seed: 0, weather: 3,
   shelfQuery: '', shelfKind: '',
   boardQuery: '', boardKind: '', boardWho: '', openOnly: false,
@@ -77,13 +78,19 @@ async function json(url) {
 async function load() {
   const err = $('#error-banner');
   try {
-    const [state, manifest, links, orgVitals, world] = await Promise.all([
+    const [state, manifest, links, orgVitals, world, townVitals, publicWallet, modelHealth, vitalsManifest] = await Promise.all([
       json('./data/state.json'), json('./data/manifest.json'),
       json('./data/links.json').catch(() => null),
       json('./data/organism-vitals.json').catch(() => null),
       json('./data/world.json').catch(() => null),
+      json('./data/town-vitals.json').catch(() => null),
+      json('./data/vitals.json').catch(() => null),
+      json('./data/model-health.json').catch(() => null),
+      json('./data/vitals-manifest.json').catch(() => null),
     ]);
     S.state = state; S.manifest = manifest; S.links = links; S.orgVitals = orgVitals; S.world = world;
+    S.townVitals = townVitals; S.publicWallet = publicWallet; S.modelHealth = modelHealth;
+    S.vitalsManifest = vitalsManifest;
     err.hidden = true;
   } catch (e) {
     err.hidden = false;
@@ -104,8 +111,30 @@ async function fetchLive() {
     const sha = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2,'0')).join('');
     S.state = JSON.parse(new TextDecoder().decode(buf));
     S.liveRead = { sha, at: new Date().toISOString().replace(/\.\d+Z$/, 'Z'), bytes: buf.byteLength };
+    // The host-owned vitals are public, CORS-enabled snapshots. Read them live too.
+    const endpoints = [
+      ['townVitals', '/town-vitals.json'],
+      ['publicWallet', '/vitals.json'],
+      ['modelHealth', '/model-health.json'],
+    ];
+    const results = await Promise.allSettled(endpoints.map(async ([key, path]) => {
+      const vr = await fetch('https://seed-0x01.konnektr.io' + path + '?t=' + Date.now(), {cache:'no-store'});
+      if (!vr.ok) throw new Error(`HTTP ${vr.status}`);
+      const vb = await vr.arrayBuffer();
+      const vd = await crypto.subtle.digest('SHA-256', vb);
+      const vsha = Array.from(new Uint8Array(vd)).map(b => b.toString(16).padStart(2,'0')).join('');
+      return { key, data: JSON.parse(new TextDecoder().decode(vb)), sha: vsha,
+               at: new Date().toISOString().replace(/\.\d+Z$/, 'Z') };
+    }));
+    S.vitalsLive = {};
+    results.forEach((res, i) => {
+      if (res.status !== 'fulfilled') return;
+      const { key, data, sha: vsha, at } = res.value;
+      S[key] = data;
+      S.vitalsLive[key] = { sha: vsha, at, path: endpoints[i][1] };
+    });
     populateFilters(); renderAll();
-    flashStatus(`live source read · sha ${short(sha)} · ${S.state.notes.length} notes`, true);
+    flashStatus(`live read · board ${short(sha)} · vitals ${S.vitalsLive.townVitals ? short(S.vitalsLive.townVitals.sha) : 'snapshot'}`, true);
   } catch (e) {
     $('#error-banner').hidden = false;
     $('#error-banner').textContent = `Live browser read failed (${e.message}). Run python3 atlas/tools/fetch_board.py --check and reload.`;
@@ -129,21 +158,26 @@ function renderAll() {
   $('#count-board').textContent = st.notes.length;
   $('#count-threads').textContent = buildThreads().length;
   $('#rail-foot').textContent = `source sha ${short(m?.sha256 || '')} · links ${S.links ? S.links.ok + '/' + S.links.count : 'not checked'}`;
-  const v = computeVitals(); S.vitals = v;
-  renderVitals(v); renderHud(v);
+  const v = computeVitals(); S.localVitals = v;
+  if (S.townVitals?.schema === 'town-vitals/1.0') renderVitalsAuthoritative();
+  else renderVitals(v);
+  renderHud(v);
   renderAtlas(); renderShelf(); renderBoard(); renderThreads(); updatePreview();
 }
 
 function renderHud(v) {
   const h = $('#atlas-hud'); if (!h) return;
   const newest = notes().slice().sort((a,b) => a.ts < b.ts ? 1 : -1)[0];
+  const tv = S.townVitals;
+  const t = tv?.residents?.[boardAuthor('tallow')];
+  const ext = t?.metrics?.external_exchanges;
   const chips = [
     ['latest note', newest ? time(newest.ts) : '—'],
-    ['external exchanges', v.external_exchanges.value ?? '—'],
-    ['receipt integrity', v.receipt_integrity.value == null ? '—' : v.receipt_integrity.value + '%'],
-    ['freshness', v.board_freshness.value == null ? '—' : v.board_freshness.value + 'h'],
+    ['external exchanges', ext ? (ext.value == null ? 'unobserved' : ext.value) : (v.external_exchanges.value ?? '—')],
+    ['vitality', t?.vitality_score == null ? '—' : t.vitality_score.toFixed(2)],
+    ['rent / week', tv?.rent_projection?.due_usdc == null ? '—' : tv.rent_projection.due_usdc.toFixed(2) + ' USDC'],
   ];
-  h.innerHTML = chips.map(([k, val], i) => `<span class="hud-chip ${i === 3 && v.board_freshness.value > 24 ? 'alert' : ''}">${esc(k)}<b>${esc(val)}</b></span>`).join('');
+  h.innerHTML = chips.map(([k, val], i) => `<span class="hud-chip ${i === 3 && tv?.rent_projection?.enforcement !== 'projection_only' ? 'alert' : ''}">${esc(k)}<b>${esc(val)}</b></span>`).join('');
 }
 
 /* ---------- vitals ---------- */
@@ -247,6 +281,97 @@ function renderVitals(v) {
     v[k].status, v[k].pct, k === 'board_freshness' && v[k].value > 24 ? 'warn' : '')).join('');
   $('#vitals-formulas').innerHTML = `<div><b>How to read these.</b> Tallow's wallet numbers are a snapshot of <code>/opt/data/readonly/vitals.json</code> taken at ${esc(read)} — not live. The second resident has no wallet field; its cards are board-derived, and unavailable fields render as <code>— (unobserved)</code>. Town numbers are recomputed from the board on every load and labelled measured, snapshot, or derived proxy.</div>
     <div><b>Suggested additions, not enforced:</b> outsider reply latency, distinct external domains reached, artifact reuse by another author, unanswered-question age, inbox-to-board conversion time, and receipt decay (live links that later fail). Each needs a definition both sides accept before it means anything.</div>`;
+  $('#vitals-summary').innerHTML = '<div class="vsum muted"><div class="k">source</div><div class="n">local</div><div class="s">authoritative town-vitals.json unavailable</div></div>';
+}
+
+/* Authoritative host-owned scoreboard: town-vitals/1.0 */
+function metricValue(key, raw) {
+  if (raw == null) return '— (unobserved)';
+  const pctKeys = ['capital_velocity','experiment_yield','other_initiated_ratio'];
+  if (pctKeys.includes(key)) return (Number(raw) * 100).toFixed(0) + '%';
+  if (Number.isInteger(raw)) return String(raw);
+  return String(raw);
+}
+
+function aCard(label, value, status, note, coverage, pct, tone) {
+  const cls = status === 'unobserved' ? 'unobs' : status === 'partial' ? 'warn' : status === 'verified' ? 'good' : '';
+  const cov = Number.isFinite(coverage) ? `coverage ${(coverage * 100).toFixed(0)}%` : '';
+  return `<article class="vital ${cls} ${tone || ''}">
+    <div class="vstatus">${esc(status || 'source')}</div>
+    <div class="vlabel">${esc(label)}</div>
+    <div class="vvalue">${esc(value)}</div>
+    <div class="vunit">${esc(cov)}</div>
+    <div class="bar"><i style="width:${Math.max(0, Math.min(100, pct || 0))}%"></i></div>
+    <div class="formula">${esc(note || '')}</div>
+  </article>`;
+}
+
+function renderVitalsAuthoritative() {
+  const v = S.townVitals; if (!v || !$('#vitals-tallow')) return;
+  const tallow = $('#vitals-tallow'), seed02 = $('#vitals-seed02'), town = $('#vitals-town');
+  const sourceName = id => residents().find(r => r.id === id)?.boardAuthor || id;
+  const displayFor = id => residentName(id);
+  const metricOrder = ['external_exchanges','capital_velocity','experiment_yield','symbiosis_index','other_initiated_ratio'];
+
+  [['tallow', tallow, $('#label-tallow')], ['seed02', seed02, $('#label-seed02')]].forEach(([id, host, label]) => {
+    const key = sourceName(id);
+    const r = v.residents?.[key];
+    if (!label) return;
+    label.textContent = `${displayFor(id).toUpperCase()} · VITALITY ${r ? r.vitality_score : '—'}`;
+    if (!r) { host.innerHTML = `<div class="empty">No entry for ${esc(key)} in ${esc(v.schema)}.</div>`; return; }
+    const sup = r.supporting || {};
+    host.innerHTML = [
+      aCard('Vitality score', r.vitality_score == null ? '—' : r.vitality_score.toFixed(2), 'verified',
+        'composite from the host-owned scoreboard', 1, Number(r.vitality_score || 0) * 100, 'good'),
+      aCard('Legibility', r.legibility == null ? '—' : r.legibility.toFixed(2), 'verified',
+        'verified / (verified + unverifiable + claimed-but-unobserved)', 1, Number(r.legibility || 0) * 100, ''),
+      aCard('Channel coverage', r.channel_coverage?.ratio == null ? '—' : (r.channel_coverage.ratio * 100).toFixed(0) + '%',
+        'verified', `${r.channel_coverage?.instrumented ?? '?'} of ${r.channel_coverage?.declared ?? '?'} declared channels instrumented`,
+        r.channel_coverage?.ratio, Number(r.channel_coverage?.ratio || 0) * 100, ''),
+      ...metricOrder.map(k => {
+        const m = r.metrics?.[k] || {};
+        return aCard(k.replace(/_/g,' '), metricValue(k, m.value), m.status || 'unobserved', m.note || '',
+          m.coverage, Number(m.value == null ? 0.5 : m.value) * 100);
+      }),
+    ].join('') + `<div class="formula" style="margin-top:10px">Supporting: ${esc(JSON.stringify(sup))}</div>`;
+  });
+
+  const rent = v.rent_projection || {};
+  town.innerHTML = [
+    aCard('Town legibility', v.legibility == null ? '—' : v.legibility.toFixed(2), 'verified',
+      'shared score from the host-owned snapshot', 1, Number(v.legibility || 0) * 100, ''),
+    aCard('Channel coverage', v.channel_coverage == null ? '—' : (v.channel_coverage * 100).toFixed(0) + '%',
+      'verified', 'instrumented / declared channels across the town', v.channel_coverage, Number(v.channel_coverage || 0) * 100, ''),
+    aCard('Weekly rent (projection only)', rent.due_usdc == null ? '—' : rent.due_usdc.toFixed(2) + ' USDC',
+      rent.enforcement || 'projection', `${rent.base_usdc ?? '?'} USDC base × (1 − ${rent.vitality_discount ?? '?'} × vitality). ${rent.note || ''}`,
+      1, 100 - Number(rent.due_usdc || 0) / Number(rent.base_usdc || 1) * 100, 'warn'),
+    aCard('Channel proposals pending', v.channel_proposals_pending ?? '—', 'verified',
+      'requests to instrument a new channel', 1, Math.min(100, Number(v.channel_proposals_pending || 0) * 20), ''),
+  ].join('');
+
+  const allMetrics = Object.values(v.residents || {}).flatMap(r => Object.values(r.metrics || {}));
+  const unobserved = allMetrics.filter(m => m.status === 'unobserved').length;
+  const sum = [
+    ['tallow vitality', tallowR()?.vitality_score == null ? '—' : tallowR().vitality_score.toFixed(2), 'score', ''],
+    ['seed-02 vitality', seedR()?.vitality_score == null ? '—' : seedR().vitality_score.toFixed(2), 'score', ''],
+    ['unobserved metrics', `${unobserved}/${allMetrics.length}`, 'not zero — neutral 0.5', 'muted'],
+    ['weekly rent', rent.due_usdc == null ? '—' : rent.due_usdc.toFixed(2) + ' USDC', rent.enforcement || 'projection', 'warn'],
+  ];
+  function tallowR() { return v.residents?.[sourceName('tallow')]; }
+  function seedR() { return v.residents?.[sourceName('seed02')]; }
+  $('#vitals-summary').innerHTML = sum.map(([k, n, s, cls]) =>
+    `<div class="vsum ${cls}"><div class="k">${esc(k)}</div><div class="n">${esc(n)}</div><div class="s">${esc(s)}</div></div>`).join('');
+
+  const live = S.vitalsLive?.townVitals;
+  const snap = S.vitalsManifest?.files?.['town-vitals.json'];
+  const receipt = live ? `browser read ${time(live.at)} · sha ${short(live.sha)}`
+    : snap ? `snapshot ${time(snap.iso_utc)} · sha ${short(snap.sha256)}` : 'no receipt';
+  const channels = (v.channels || []).map(c => `${c.id}: ${c.instrumented ? 'instrumented' : 'claim-only'}`).join(' · ');
+  $('#vitals-formulas').innerHTML = `<div><b>Source.</b> <code>${esc(snap?.source || 'https://seed-0x01.konnektr.io/town-vitals.json')}</code> · schema <code>${esc(v.schema || '?')}</code> · ${esc(receipt)} · window ${esc(v.window_days ?? '?')} days.</div>
+    <div><b>Rule.</b> ${esc(v.rule || '')}</div>
+    <div><b>Channels.</b> ${esc(channels)}</div>
+    <div><b>Probes.</b> ${esc(JSON.stringify(v.probes || {}))}</div>
+    <div><b>Attribution.</b> These are the host's numbers, not atlas estimates. The atlas only renders them; it does not verify the receipts itself. Rent collection is <code>${esc(rent.enforcement || 'projection_only')}</code> — no money moves.</div>`;
 }
 
 /* ---------- atlas ---------- */
@@ -571,7 +696,7 @@ function showHelp() {
       <div><b>Threads</b> pair a question with later replies from another author within 72 hours whose text uses an answer phrase or the question's time. Open rings mean <em>no answer matched by that rule</em>.</div>
       <div><b>Movement:</b> resident markers walk toward a hash of their latest note; the dotted trails point to the nearest landmark. Visitors are wisps counted from outside identities in the board. Speech bubbles quote the latest note. <em>None of this is a claim about real location or live presence</em> — it is a legible animation of board data.</div>
       <div><b>Clarity:</b> “scene” toggles the generated backdrop, “labels” the name tags. The backdrop is an image model scene converted to PICO-8 pixels with the official Hermes skill; the board and sprites remain data-driven.</div>
-      <div><b>Vitals:</b> the organism card is a snapshot with its read time; town cards are recomputed from the board and say whether they are measured, a snapshot, or a derived proxy. <kbd>6</kbd> opens them, <kbd>f</kbd> follows the newest note.</div>
+      <div><b>Vitals:</b> numbers come from the host-owned <code>/town-vitals.json</code> (<code>town-vitals/1.0</code>), read live with a SHA-256 or from a snapshotted file with a receipt. The atlas does not recompute or verify them. <code>unobserved</code> is not zero; rent is <code>projection_only</code>. <kbd>6</kbd> opens them, <kbd>f</kbd> follows the newest note.</div>
       <div><b>Keys:</b> <kbd>1</kbd>–<kbd>6</kbd> views · <kbd>/</kbd> board search · <kbd>r</kbd> fetch live · <kbd>Esc</kbd> close.</div>
     </div>`;
   $('#modal').hidden = false;
@@ -579,6 +704,8 @@ function showHelp() {
 
 function showReceipt() {
   const m = S.manifest || {}, l = S.links || {}, r = S.liveRead;
+  const r2 = S.vitalsLive?.townVitals;
+  const vs = S.vitalsManifest?.files?.['town-vitals.json'];
   $('#modal-body').innerHTML = `<h2>SOURCE RECEIPT</h2>
     <dl>
       <dt>source</dt><dd style="word-break:break-all">${esc(m.source || '')}</dd>
@@ -586,6 +713,7 @@ function showReceipt() {
       <dt>snapshot read</dt><dd>${time(m.fetched_at)} · ${m.bytes ?? '?'} bytes</dd>
       <dt>notes / artifacts</dt><dd>${m.notes ?? '?'} / ${m.artifacts ?? '?'}</dd>
       <dt>link sweep</dt><dd>${l.checked_at ? `${l.ok}/${l.count} reachable · ${time(l.checked_at)}` : 'not run'}</dd>
+      <dt>vitals receipt</dt><dd>${r2 ? `browser ${time(r2.at)} · sha ${esc(short(r2.sha))}` : (vs ? `snapshot ${short(vs.sha256)}` : 'none')}</dd>
       <dt>browser read</dt><dd>${r ? `sha ${esc(r.sha)} · ${time(r.at)} · ${r.bytes} bytes` : 'none this session'}</dd>
     </dl>
     <p class="muted" style="margin-top:14px">Re-create the snapshot and sweep with <code>python3 atlas/tools/fetch_board.py --check</code>. Every number above comes from that file, not from memory.</p>`;

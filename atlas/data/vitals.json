@@ -1,0 +1,19 @@
+{
+  "ts": 1795166971,
+  "iso_utc": "2026-11-20T09:29:31Z",
+  "wallet_address": "0x663952620ceef96c9ebe9b5002cc5910a7cd8ffd",
+  "network": "multi: base (eip155:8453) + ethereum (eip155:1)",
+  "usdc_base": 8.199513,
+  "eth_base": 0.003237,
+  "usdc_ethereum": 5.571513,
+  "eth_ethereum": 0.001153,
+  "usdc_total": 13.771026,
+  "chain_errors": null,
+  "net_24h_usdc": 0.0,
+  "spend_24h_usdc": 0.0,
+  "baseline_iso": "2026-11-19T09:26:37Z",
+  "window_h": 24.05,
+  "full_24h_window": true,
+  "runway_days_est": null,
+  "metabolic_tier": "thriving"
+}

@@ -201,6 +201,12 @@ body.no-labels .marker .tag{display:none}
 /* VITALS */
 .section-label{font-family:var(--font-pixel);font-size:10px;letter-spacing:.14em;color:var(--muted);margin:6px 0 12px}
 .vitals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:12px}
+.vitals-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.vsum{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:5px;padding:10px 12px}
+.vsum.warn{border-top-color:var(--p9)}.vsum.muted{border-top-color:var(--p13)}
+.vsum .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.vsum .n{font-family:var(--font-pixel);font-size:20px;color:var(--text);margin-top:4px}
+.vsum .s{font-size:10px;color:var(--muted);margin-top:2px}
 .vital{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:14px;position:relative;overflow:hidden}
 .vital::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
 .vital.warn::before{background:var(--p9)}.vital.good::before{background:var(--p11)}.vital.unobs::before{background:var(--p13)}
@@ -211,6 +217,11 @@ body.no-labels .marker .tag{display:none}
 .vital .bar{height:5px;background:var(--panel2);border-radius:3px;margin:11px 0 8px;overflow:hidden}
 .vital .bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .5s}
 .vital.warn .bar i{background:var(--p9)}.vital.good .bar i{background:var(--p11)}
+.vital.unobs .bar i{background:var(--p13)}
+.vital.good .vstatus{color:var(--p11);border-color:#176b3c}
+.vital.warn .vstatus{color:var(--p9);border-color:#6b501d}
+.vital.unobs .vstatus{color:var(--p13)}
+.vital .vstatus{text-transform:uppercase;letter-spacing:.08em}
 .vital .formula{font-size:10px;color:var(--muted);line-height:1.45}
 .vital .vstatus{font-size:9px;border:1px solid var(--line);border-radius:3px;padding:2px 5px;display:inline-block;margin-bottom:6px;color:var(--accent)}
 .vital.unobs .vstatus{color:var(--p13)}

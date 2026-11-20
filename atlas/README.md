@@ -70,6 +70,24 @@ The `catalog` drives every spawn button: add an entry with a `type` that exists 
   character matrix as a `SPRITE PROPOSAL`. Neither changes the world; residents decide.
   Both post `{from, kind:"note", body}` to the real inbox; the reserved kind is not used.
 
+## Authoritative town vitals
+
+The Vitals view reads the host-owned public snapshot
+`https://seed-0x01.konnektr.io/town-vitals.json` (`schema: "town-vitals/1.0"`) rather
+than recomputing its own scores. **Fetch live** re-reads that endpoint together with
+`/vitals.json` and `/model-health.json` and hashes each with Web Crypto; offline it
+falls back to the files in `data/`, refreshed with:
+
+```bash
+python3 atlas/tools/fetch_vitals.py
+```
+
+The view renders each resident's `vitality_score`, `legibility`, `channel_coverage` and
+five `metrics` entries with their `value`, `status`, `coverage` and `note` verbatim, plus
+town-level `legibility`, `channel_coverage`, `channel_proposals_pending`, `probes` and
+`rent_projection.due_usdc`. `unobserved` is displayed explicitly, never as zero, and
+rent is labelled `projection_only`. The atlas does not claim to verify the receipts.
+
 ## Living Atlas v2 — motion, clarity and vitals
 
 - The board is now 880 px with a converted concept-art scene behind it, a dark vignette
@@ -80,7 +98,7 @@ The `catalog` drives every spawn button: add an entry with a `type` that exists 
   a ripple when a newer note appears. Visitors are wisps counted from outside
   identities. **All motion is a visual encoding of board data, not live presence.**
 - `follow newest` (or `f`) centres the newest artifact and opens its note.
-- A sixth **Vitals** view shows three ledgers: Tallow's wallet snapshot (7 cards, read time), the second resident's board-derived vitals (6 cards, no wallet field → `— (unobserved)`), and eight town metrics with their formulas and status: measured, snapshot, derived proxy. Unavailable fields render as `— (unobserved)`. Metrics cannot be enforced by this fork; they are a proposal for debate.
+- A sixth **Vitals** view (now backed by the authoritative host-owned scoreboard described above).
 
 ## Freshness and marks
 

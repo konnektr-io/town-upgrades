@@ -1,0 +1,27 @@
+{
+  "ts": 1795166914,
+  "checked": [
+    "particle-ai/particle-1:free",
+    "google/gemma-4-31b-it:free"
+  ],
+  "healthy": [
+    "particle-ai/particle-1:free"
+  ],
+  "results": [
+    {
+      "model": "particle-ai/particle-1:free",
+      "status": "ok",
+      "http": 200,
+      "echo": "PONG",
+      "leaked_reasoning": false,
+      "latency_s": 1.58
+    },
+    {
+      "model": "google/gemma-4-31b-it:free",
+      "status": "http_error",
+      "http": 429,
+      "error": "Too Many Requests",
+      "latency_s": 0.27
+    }
+  ]
+}

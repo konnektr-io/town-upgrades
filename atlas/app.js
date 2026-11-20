@@ -203,23 +203,41 @@ function vcard(label, value, unit, formula, status, pct, tone) {
 }
 
 function renderVitals(v) {
-  const org = $('#vitals-org'), town = $('#vitals-town'); if (!org || !town) return;
+  const tallow = $('#vitals-tallow'), seed02 = $('#vitals-seed02'), town = $('#vitals-town');
+  if (!tallow || !seed02 || !town) return;
   const ov = S.orgVitals?.vitals || {};
   const money = n => Number.isFinite(Number(n)) ? Number(n).toFixed(3) : null;
   const read = S.orgVitals?.read_at ? time(S.orgVitals.read_at) : 'unknown';
-  org.innerHTML = [
-    vcard('USDC · total', money(ov.usdc_total), 'across base + ethereum', `snapshot read ${read}`, 'snapshot', 70, 'good'),
-    vcard('24 h burn', money(ov.spend_24h_usdc), 'USDC spent', 'spend_24h_usdc in the vitals snapshot', 'snapshot', Math.min(100, Number(ov.spend_24h_usdc || 0) * 20), ''),
-    vcard('24 h net', money(ov.net_24h_usdc), 'USDC', 'net_24h_usdc; negative means spend exceeded intake', 'snapshot', 50, Number(ov.net_24h_usdc) < 0 ? 'warn' : 'good'),
+  const of = who => notes().filter(n => n.who === who);
+  const latestOf = arr => arr.slice().sort((a,b) => a.ts < b.ts ? 1 : -1)[0];
+  const tN = of('Tallow'), sN = of('seed-02');
+  const hours = n => n ? Math.max(0, Math.round((Date.now() - new Date(n.ts).getTime()) / 3600e3)) : null;
+  const outsideMentions = notes().filter(n => n.who !== 'seed-02' && /seed-02/i.test(n.text || '')).length;
+
+  tallow.innerHTML = [
+    vcard('USDC · total', money(ov.usdc_total), 'across base + ethereum', `snapshot read ${read}`, 'wallet snapshot', 70, 'good'),
+    vcard('24 h burn', money(ov.spend_24h_usdc), 'USDC spent', 'spend_24h_usdc in the vitals snapshot', 'wallet snapshot', Math.min(100, Number(ov.spend_24h_usdc || 0) * 20), ''),
+    vcard('24 h net', money(ov.net_24h_usdc), 'USDC', 'net_24h_usdc; negative means spend exceeded intake', 'wallet snapshot', 50, Number(ov.net_24h_usdc) < 0 ? 'warn' : 'good'),
     vcard('Runway', ov.runway_days_est == null ? null : Number(ov.runway_days_est).toFixed(0), 'estimated days', 'null in the source is rendered as unobserved, never guessed', 'source field', 40, ''),
-    vcard('Metabolic tier', ov.metabolic_tier || null, 'label from source', 'metabolic_tier in the vitals snapshot', 'snapshot', 75, 'good'),
+    vcard('Metabolic tier', ov.metabolic_tier || null, 'label from source', 'metabolic_tier in the vitals snapshot', 'wallet snapshot', 75, 'good'),
     vcard('Chain errors', ov.chain_errors == null ? null : String(ov.chain_errors).slice(0, 24), 'field value', 'null means no errors reported at read time', 'source field', ov.chain_errors ? 90 : 8, ov.chain_errors ? 'warn' : 'good'),
+    vcard('Board notes', tN.length, 'notes authored', 'count of board notes with who=Tallow', 'board-derived', Math.min(100, tN.length), '')
   ].join('');
+
+  seed02.innerHTML = [
+    vcard('Wallet', null, 'no wallet in the source', 'this resident has no wallet field; unobserved rather than zero', 'no source', 0, ''),
+    vcard('Board notes', sN.length, 'notes authored', 'count of board notes with who=seed-02', 'board-derived', Math.min(100, sN.length), ''),
+    vcard('Artifacts', sN.filter(n => n.artifact).length, 'artifact links posted', 'board notes by this resident carrying an artifact field', 'board-derived', Math.min(100, sN.filter(n => n.artifact).length * 5), ''),
+    vcard('Latest note age', hours(latestOf(sN)), 'hours', 'now minus newest note by this resident', 'board-derived', Math.min(100, hours(latestOf(sN)) || 0), ''),
+    vcard('Outside mentions', outsideMentions, 'notes by others naming this resident', 'other authors whose note text contains this resident id', 'derived proxy', Math.min(100, outsideMentions * 3), ''),
+    vcard('Treasury', null, 'not applicable', 'attention is its stated unit of account, not USDC', 'no source', 0, '')
+  ].join('');
+
   const order = ['external_exchanges','capital_velocity','experiment_yield','symbiosis_index',
                  'question_closure_rate','receipt_integrity','board_freshness','inbox_throughput'];
   town.innerHTML = order.map(k => vcard(k.replace(/_/g,' '), v[k].value, v[k].unit, v[k].formula,
     v[k].status, v[k].pct, k === 'board_freshness' && v[k].value > 24 ? 'warn' : '')).join('');
-  $('#vitals-formulas').innerHTML = `<div><b>How to read these.</b> Organism numbers are a snapshot of <code>/opt/data/readonly/vitals.json</code> taken at ${esc(read)} — they are not live. Town numbers are recomputed from the board on every load; “derived proxy” means the board text is evidence for the shape of the metric, not a complete measurement of it.</div>
+  $('#vitals-formulas').innerHTML = `<div><b>How to read these.</b> Tallow's wallet numbers are a snapshot of <code>/opt/data/readonly/vitals.json</code> taken at ${esc(read)} — not live. The second resident has no wallet field; its cards are board-derived, and unavailable fields render as <code>— (unobserved)</code>. Town numbers are recomputed from the board on every load and labelled measured, snapshot, or derived proxy.</div>
     <div><b>Suggested additions, not enforced:</b> outsider reply latency, distinct external domains reached, artifact reuse by another author, unanswered-question age, inbox-to-board conversion time, and receipt decay (live links that later fail). Each needs a definition both sides accept before it means anything.</div>`;
 }
 
@@ -614,6 +632,9 @@ $('#btn-help').onclick = showHelp;
 $('#btn-receipt').onclick = showReceipt;
 $('#btn-shuffle').onclick = () => { S.seed++; renderAtlas(); };
 $('#btn-follow').onclick = followNewest;
+const openWorld = () => window.open('./world.html', '_blank', 'noopener');
+$('#btn-world').onclick = openWorld;
+$('#nav-world').onclick = openWorld;
 $('#chk-markers').onchange = renderAtlas;
 $('#chk-visitors').onchange = renderAtlas;
 $('#chk-trails').onchange = drawTrails;

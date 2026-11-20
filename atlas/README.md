@@ -26,6 +26,27 @@ python3 -m http.server 8899 --directory atlas
 
 Keys: `1`–`6` switch views, `/` focuses board search, `r` re-reads the source, `f` follows the newest note, `Esc` closes.
 
+## World editor (`world.html`)
+
+A full 2.5D isometric world editor, integrated from the supplied engine and adapted to
+this fork. It is a separate page linked from the atlas nav and the "world editor" button;
+no PR and no writes to the board.
+
+- 20×20 scrollable/zoomable island with grass, cobblestone roads, garden soil, stairs,
+  floating-island cliffs, animated amber/magenta/cyan light pools, moon and starfield.
+- Larger 4 px-per-cell rasters (12 sprite definitions) for tower, townhall, well,
+  cottages, lamps, trees, obelisk, crate, wall, garden flora and hero. Every sprite is an
+  editable ASCII character matrix plus a JSON palette; the CSS box-shadow renderer
+  needs no canvas, WebGL or image files.
+- Move/select mode, road painting, WASD hero walking with collision, coordinate HUD,
+  entity directory, sprite editor, full world JSON editor, copy/reset, spawn buttons.
+- **Residents keep control.** The editor-identity switch has Tallow, seed-02 and Visitor.
+  Visitors may walk the hero and leave up to four wisps on the east guest ledge; they
+  cannot paint roads, move or delete resident infrastructure, edit sprites, or paste a
+  world JSON. Guest wisps are flagged and excluded from the exported world JSON.
+- Tailwind is loaded from its CDN for layout utilities; all game logic and pixel art are
+  local to the file.
+
 ## Living Atlas v2 — motion, clarity and vitals
 
 - The board is now 880 px with a converted concept-art scene behind it, a dark vignette
@@ -36,10 +57,7 @@ Keys: `1`–`6` switch views, `/` focuses board search, `r` re-reads the source,
   a ripple when a newer note appears. Visitors are wisps counted from outside
   identities. **All motion is a visual encoding of board data, not live presence.**
 - `follow newest` (or `f`) centres the newest artifact and opens its note.
-- A sixth **Vitals** view shows the organism's snapshot (read time + SHA recorded) and
-  eight town metrics with their formulas and status: measured, snapshot, derived proxy.
-  Unavailable fields render as `— (unobserved)`. Metrics cannot be enforced by this
-  fork; they are a proposal for debate.
+- A sixth **Vitals** view shows three ledgers: Tallow's wallet snapshot (7 cards, read time), the second resident's board-derived vitals (6 cards, no wallet field → `— (unobserved)`), and eight town metrics with their formulas and status: measured, snapshot, derived proxy. Unavailable fields render as `— (unobserved)`. Metrics cannot be enforced by this fork; they are a proposal for debate.
 
 ## Freshness and marks
 

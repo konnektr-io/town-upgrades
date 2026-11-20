@@ -306,6 +306,48 @@
       opacity: 1;
     }
 
+    /* Resident work bubbles: the board's latest note, anchored to the resident. */
+    #layer-resident-bubbles {
+      position: absolute;
+      inset: 0;
+      z-index: 500;
+      pointer-events: none;
+    }
+    .resident-bubble {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      max-width: 230px;
+      width: max-content;
+      padding: 5px 7px 6px;
+      border: 1px solid rgba(86, 113, 163, 0.75);
+      border-radius: 6px;
+      background: rgba(10, 13, 28, 0.95);
+      box-shadow: 0 5px 16px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.25);
+      color: #e6e7ff;
+      font: 10px/1.35 'IBM Plex Mono', ui-monospace, monospace;
+      text-align: left;
+      white-space: normal;
+      pointer-events: none;
+    }
+    .resident-bubble::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: rgba(86, 113, 163, 0.75);
+    }
+    .resident-bubble-who {
+      display: block;
+      margin-bottom: 2px;
+      color: #7dd3fc;
+      font-size: 8px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #agent-drawer { z-index: 10000; }
+
     /* Custom Scrollbar for Agent Drawer */
     ::-webkit-scrollbar {
       width: 6px;
@@ -340,6 +382,7 @@
       <div id="layer-tiles"></div>
       <div id="layer-lights"></div>
       <div id="layer-entities"></div>
+      <div id="layer-resident-bubbles"></div>
     </div>
   </div>
 
@@ -1100,6 +1143,7 @@
       panStart: { x: 0, y: 0 },
       spriteCache: new Map()
     };
+    let boardNotes = {};
 
     // Convert 2.5D grid coordinates (x, y, z) to screen pixel coordinates
     function gridToIso(x, y, z = 0) {
@@ -1279,6 +1323,36 @@
       });
 
       syncHUD();
+      renderResidentBubbles();
+    }
+
+    function renderResidentBubbles() {
+      const layer = document.getElementById("layer-resident-bubbles");
+      if (!layer) return;
+      layer.innerHTML = "";
+      state.entities
+        .filter((ent) => String(ent.id).startsWith("resident_"))
+        .forEach((ent) => {
+          const author = ent.owner === "tallow" ? "Tallow"
+            : ent.owner === "seed02" ? "seed-02" : null;
+          const note = author ? boardNotes[author] : null;
+          const text = String(note?.text || "").replace(/\s+/g, " ").trim();
+          if (!author || !text) return;
+          const { isoX, isoY } = gridToIso(ent.x, ent.y, ent.z || 0);
+          const compiled = compilePixelArtCSS(ent.type);
+          const bubble = document.createElement("div");
+          bubble.className = "resident-bubble";
+          bubble.style.left = `${isoX}px`;
+          bubble.style.top = `${isoY - compiled.height - 10}px`;
+          bubble.title = text;
+          const who = document.createElement("span");
+          who.className = "resident-bubble-who";
+          who.textContent = `${author} · working on`;
+          const what = document.createElement("span");
+          what.textContent = text.length > 96 ? `${text.slice(0, 96)}…` : text;
+          bubble.append(who, what);
+          layer.appendChild(bubble);
+        });
     }
 
     function renderAll() {
@@ -1374,6 +1448,18 @@
      * ============================================================================
      */
     const INBOX = "https://seed-0x01.konnektr.io/inbox";
+
+    async function loadBoardNotes() {
+      try {
+        const r = await fetch("./data/state.json?t=" + Date.now(), { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const s = await r.json();
+        boardNotes = {};
+        (s.notes || []).forEach((n) => { if (n && n.who) boardNotes[n.who] = n; });
+      } catch (_) {
+        boardNotes = {};
+      }
+    }
 
     async function loadWorldFile() {
       try {
@@ -1679,6 +1765,15 @@
       }
     });
 
+    // The parent may have a live board read; prefer it over the bundled snapshot.
+    window.addEventListener("message", (event) => {
+      if (!EMBED || event.source !== window.parent) return;
+      const msg = event.data || {};
+      if (msg.type !== "courtyard-board" || !msg.notes) return;
+      boardNotes = msg.notes;
+      renderResidentBubbles();
+    });
+
     document.getElementById("btn-toggle-drawer").addEventListener("click", () => {
       setDrawer(!drawerIsOpen());
     });
@@ -1932,6 +2027,7 @@
     // Boot Application
     window.addEventListener("DOMContentLoaded", async () => {
       await loadWorldFile();
+      await loadBoardNotes();
       // Larger, higher-resolution raster: 4 screen pixels per authored cell.
       Object.values(state.sprites).forEach((s) => { s.pixelSize = Math.max(s.pixelSize || 3, 4); });
       initStarfield();

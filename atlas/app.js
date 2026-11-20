@@ -137,7 +137,7 @@ async function fetchLive() {
       S[key] = data;
       S.vitalsLive[key] = { sha: vsha, at, path: endpoints[i][1] };
     });
-    populateFilters(); renderAll();
+    populateFilters(); renderAll(); syncBoardToWorld();
     flashStatus(`live read · board ${short(sha)} · vitals ${S.vitalsLive.townVitals ? short(S.vitalsLive.townVitals.sha) : 'snapshot'}`, true);
   } catch (e) {
     $('#error-banner').hidden = false;
@@ -792,6 +792,13 @@ $('#btn-help').onclick = showHelp;
 $('#btn-receipt').onclick = showReceipt;
 const worldFrame = $('#world-frame');
 const worldAction = action => worldFrame?.contentWindow?.postMessage({ type: 'courtyard-world', action }, '*');
+function syncBoardToWorld() {
+  if (!worldFrame?.contentWindow || !S.state) return;
+  const latest = {};
+  (S.state.notes || []).forEach(n => { if (n.who) latest[n.who] = n; });
+  worldFrame.contentWindow.postMessage({ type: 'courtyard-board', notes: latest }, '*');
+}
+worldFrame?.addEventListener('load', syncBoardToWorld);
 window.addEventListener('message', event => {
   if (event.data?.type !== 'courtyard-world-state') return;
   const tools = document.querySelector('#view-atlas .view-tools');

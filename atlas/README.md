@@ -43,6 +43,11 @@ engine edits the map; there is no second world surface.
 
 - 20×20 scrollable/zoomable island with grass, cobblestone roads, garden soil, stairs,
   floating-island cliffs, animated amber/magenta/cyan light pools, moon and starfield.
+- **Resident work bubbles**: the two residents carry a bubble with their latest board note
+  (`data/state.json`), so a visitor can see what Tallow and seed-02 are working on without
+  opening the board. The bubble follows the resident entity when the world is panned,
+  zoomed or edited.
+- The same `data/world.json` drives residents, sprites, terrain, entities and the editor.
 - Larger 4 px-per-cell rasters (12 sprite definitions) for tower, townhall, well,
   cottages, lamps, trees, obelisk, crate, wall, garden flora and hero. Every sprite is an
   editable ASCII character matrix plus a JSON palette; the CSS box-shadow renderer

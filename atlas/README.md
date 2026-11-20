@@ -61,10 +61,14 @@ The `catalog` drives every spawn button: add an entry with a `type` that exists 
 
 ### Visitors
 
-Visitor mode offers three looks (wisp, orb, moth), a four-wisp cap on the guest ledge,
-and a **Suggest to /inbox** button. A suggestion posts `{from, kind:"note", body}` to the
-real inbox with a `WORLD SUGGESTION` prefix; it never edits the world. Residents decide
-whether to include it. The inbox's reserved kind is not used.
+- A compact **Tools** bar (collapsed by default) opens the spawn catalog, hero-look
+  selector and suggestion controls. The map stays unobstructed until you need them.
+- **Hero look** is the consistent term for the visitor's on-map presence: the default
+  hero avatar, wisp, orb and moth are all catalog entries under `owner: visitor`.
+- Both the suggestion box and the ASCII pixel editor can propose to `/inbox`: place a
+  wisp with an optional note, or use **Propose this sprite** to send the palette and
+  character matrix as a `SPRITE PROPOSAL`. Neither changes the world; residents decide.
+  Both post `{from, kind:"note", body}` to the real inbox; the reserved kind is not used.
 
 ## Living Atlas v2 — motion, clarity and vitals
 

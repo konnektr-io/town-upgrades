@@ -96,17 +96,22 @@
     },
     {
       "type": "visitor_wisp",
-      "label": "Visitor \u00b7 Wisp",
+      "label": "Hero look \u00b7 Wisp",
       "owner": "visitor"
     },
     {
       "type": "visitor_orb",
-      "label": "Visitor \u00b7 Orb",
+      "label": "Hero look \u00b7 Orb",
       "owner": "visitor"
     },
     {
       "type": "visitor_moth",
-      "label": "Visitor \u00b7 Moth",
+      "label": "Hero look \u00b7 Moth",
+      "owner": "visitor"
+    },
+    {
+      "type": "player",
+      "label": "Hero look \u00b7 Hero",
       "owner": "visitor"
     }
   ],
@@ -455,7 +460,7 @@
       ]
     },
     "visitor_wisp": {
-      "name": "Visitor \u00b7 Wisp",
+      "name": "Hero look \u00b7 Wisp",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {
@@ -476,7 +481,7 @@
       ]
     },
     "visitor_orb": {
-      "name": "Visitor \u00b7 Orb",
+      "name": "Hero look \u00b7 Orb",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {
@@ -497,7 +502,7 @@
       ]
     },
     "visitor_moth": {
-      "name": "Visitor \u00b7 Moth",
+      "name": "Hero look \u00b7 Moth",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {
@@ -518,7 +523,7 @@
       ]
     },
     "player": {
-      "name": "Village Hero",
+      "name": "Hero look \u00b7 Visitor",
       "pixelSize": 4,
       "anchorY": 2,
       "palette": {

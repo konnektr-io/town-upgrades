@@ -1,0 +1,918 @@
+{
+  "meta": {
+    "gridSize": 20,
+    "source": "atlas/data/world.json",
+    "note": "Single source for residents, sprites, terrain and placeable artifacts. Edit here and reload both pages."
+  },
+  "residents": [
+    {
+      "id": "tallow",
+      "name": "Tallow",
+      "boardAuthor": "Tallow",
+      "sprite": "resident_placeholder",
+      "color": "#29adff",
+      "placeholder": true,
+      "wallet": true
+    },
+    {
+      "id": "seed02",
+      "name": "seed-02 (unnamed)",
+      "boardAuthor": "seed-02",
+      "sprite": "resident_placeholder",
+      "color": "#ff77a8",
+      "placeholder": true,
+      "wallet": false
+    },
+    {
+      "id": "visitor",
+      "name": "Visitor",
+      "boardAuthor": "",
+      "sprite": "visitor_wisp",
+      "color": "#c2c3c7",
+      "visitor": true,
+      "wallet": false
+    }
+  ],
+  "catalog": [
+    {
+      "type": "tower",
+      "label": "Tower",
+      "owner": "resident"
+    },
+    {
+      "type": "townhall",
+      "label": "Townhall",
+      "owner": "resident"
+    },
+    {
+      "type": "cottage",
+      "label": "Cottage",
+      "owner": "resident"
+    },
+    {
+      "type": "well",
+      "label": "Well",
+      "owner": "resident"
+    },
+    {
+      "type": "lamp_amber",
+      "label": "Amber Lamp",
+      "owner": "resident"
+    },
+    {
+      "type": "lamp_magenta",
+      "label": "Magenta Lamp",
+      "owner": "resident"
+    },
+    {
+      "type": "tree",
+      "label": "Tree",
+      "owner": "resident"
+    },
+    {
+      "type": "obelisk",
+      "label": "Obelisk",
+      "owner": "resident"
+    },
+    {
+      "type": "crate",
+      "label": "Crate",
+      "owner": "resident"
+    },
+    {
+      "type": "wall",
+      "label": "Wall",
+      "owner": "resident"
+    },
+    {
+      "type": "garden_flora",
+      "label": "Moonflowers",
+      "owner": "resident"
+    },
+    {
+      "type": "resident_placeholder",
+      "label": "Resident avatar (placeholder)",
+      "owner": "resident"
+    },
+    {
+      "type": "visitor_wisp",
+      "label": "Visitor \u00b7 Wisp",
+      "owner": "visitor"
+    },
+    {
+      "type": "visitor_orb",
+      "label": "Visitor \u00b7 Orb",
+      "owner": "visitor"
+    },
+    {
+      "type": "visitor_moth",
+      "label": "Visitor \u00b7 Moth",
+      "owner": "visitor"
+    }
+  ],
+  "terrain": [
+    "....................",
+    "....GGGGGGGG........",
+    "...GGGGGGGGGG.......",
+    "..GGGGGGGGGGGG......",
+    ".GGGGGRRRRGGGGG.....",
+    ".GGGGRRRRRRGGGG.....",
+    ".GGGRRRRRRRRGGG.....",
+    ".GGGRRRRRRRRGGG.....",
+    ".GGGGRRRRRRFFFF.....",
+    ".GGGGRRRRRRFFFF.....",
+    "..GGRRRGGGGFFFF.....",
+    "..GGRRGGGGGGGGG.....",
+    "..GGRGGGGGGGGGG.....",
+    "...GSGGGGGGGGG......",
+    "....S...............",
+    "....................",
+    "..............GGGG..",
+    "..............GGGG..",
+    "..............GGGG..",
+    "...................."
+  ],
+  "sprites": {
+    "tower": {
+      "name": "Wizard Clock Tower",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "B": "#2b4b8c",
+        "b": "#4374c4",
+        "S": "#6c769c",
+        "s": "#8c97bf",
+        "P": "#57557d",
+        "Y": "#fde047",
+        "C": "#38bdf8",
+        "D": "#4a2c2a",
+        "G": "#f59e0b"
+      },
+      "matrix": [
+        ".......#G#.......",
+        "......#bBb#......",
+        ".....#bBBBb#.....",
+        "....#bBBBBBb#....",
+        "...#bBBBBBBBb#...",
+        "..#bBB#Y#BBBBb#..",
+        ".#bBBBBBBBBBBBb#.",
+        "#bBBBBBBBBBBBBBb#",
+        ".#sssssssssssss#.",
+        ".#s#Y#s#Y#s#Y#s#.",
+        ".#s#Y#s#Y#s#Y#s#.",
+        ".#sssssssssssss#.",
+        "..#SSSSSSSSSSS#..",
+        "..#S#C#S#C#S#S#..",
+        "..#S#C#S#C#S#S#..",
+        "..#SSSSSSSSSSS#..",
+        ".#sssssssssssss#.",
+        ".#s#Y#sssss#Y#s#.",
+        ".#s#Y#s#D#s#Y#s#.",
+        ".#sssss#D#sssss#.",
+        "#SSSSSSSSSSSSSSS#",
+        "#################"
+      ]
+    },
+    "cottage": {
+      "name": "Moonlit Cottage",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "B": "#294682",
+        "b": "#4875c7",
+        "C": "#6b5b7b",
+        "W": "#98a2c4",
+        "w": "#737d9e",
+        "T": "#3b2d45",
+        "Y": "#fde047",
+        "D": "#5c382c"
+      },
+      "matrix": [
+        "........#CC#......",
+        "......##bBBb##....",
+        "....##bBBBBBBb##..",
+        "..##bBBBBBBBBBBb##",
+        ".#bBBBBBBBBBBBBBBb",
+        "#bBBBBBBBBBBBBBBBb",
+        ".#TTTTTT#TTTTTTTT#",
+        ".#W#YY#WTW#YY#Www#",
+        ".#W#YY#WTW#YY#Www#",
+        ".#WWWWWWTDTWWWWww#",
+        ".#W#YY#WTDTW#Y#ww#",
+        ".#WWWWWWTDTWWWWww#",
+        ".#################"
+      ]
+    },
+    "well": {
+      "name": "Stone Pulley Well",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "W": "#6e473b",
+        "w": "#946353",
+        "R": "#cbd5e1",
+        "S": "#7d89b0",
+        "s": "#9aa6cc",
+        "P": "#4a5373",
+        "V": "#0f172a"
+      },
+      "matrix": [
+        "....#w#....#w#....",
+        ".....#Ww##wW#.....",
+        "......#WWWW#......",
+        ".....#Ww#R#wW#....",
+        "....#w#.RRR.#w#...",
+        "........#R#.......",
+        "..###sssssssss###.",
+        ".#sssVVVVVVVVVsss#",
+        "#sSSSSSSSSSSSSSSs#",
+        "#SPPPPPPPPPPPPPPS#",
+        "#SSSSSSSSSSSSSSSS#",
+        ".#PPPPPPPPPPPPPP#.",
+        "..##############.."
+      ]
+    },
+    "lamp_amber": {
+      "name": "Amber Streetlamp",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#0f1326",
+        "M": "#334155",
+        "G": "#fbbf24",
+        "Y": "#fef08a"
+      },
+      "matrix": [
+        "...###...",
+        "..#GGG#..",
+        "..#GYG#..",
+        "..#GGG#..",
+        "...#M#...",
+        "...#M#...",
+        "...#M#...",
+        "...#M#...",
+        "...#M#...",
+        "..#MMM#..",
+        "..#####.."
+      ]
+    },
+    "lamp_magenta": {
+      "name": "Arcane Magenta Lamp",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#0f1326",
+        "M": "#334155",
+        "P": "#e879f9",
+        "W": "#fae8ff"
+      },
+      "matrix": [
+        "...###...",
+        "..#PPP#..",
+        "..#PWP#..",
+        "..#PPP#..",
+        "...#M#...",
+        "...#M#...",
+        "...#M#...",
+        "...#M#...",
+        "...#M#...",
+        "..#MMM#..",
+        "..#####.."
+      ]
+    },
+    "tree": {
+      "name": "Moonlit Oak Tree",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#0d1326",
+        "L": "#2e6f73",
+        "M": "#1f4e59",
+        "D": "#153642",
+        "T": "#4a322d"
+      },
+      "matrix": [
+        ".....######.....",
+        "...##LLLLLL##...",
+        "..#LLLLMMMMMM#..",
+        ".#LLLMMMMMMMMM#.",
+        "#LLMMMMMMMMDDDD#",
+        "#LMMMMMMMDDDDDD#",
+        ".#MMMMMDDDDDDD#.",
+        "..##DDDDDDDD##..",
+        "....###TT###....",
+        "......#TT#......",
+        "......#TT#......",
+        ".....######....."
+      ]
+    },
+    "obelisk": {
+      "name": "Runic Monolith",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#0d1224",
+        "S": "#525e82",
+        "s": "#7785ab",
+        "C": "#38bdf8"
+      },
+      "matrix": [
+        "....##....",
+        "...#sS#...",
+        "...#sS#...",
+        "..#sSCS#..",
+        "..#sSS#...",
+        "..#sSCS#..",
+        "..#sSS#...",
+        ".#ssSSS#..",
+        "#ssssSSSS#",
+        "##########"
+      ]
+    },
+    "crate": {
+      "name": "Cargo Crate",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#140e14",
+        "W": "#7c533e",
+        "w": "#9e6d52",
+        "D": "#543628"
+      },
+      "matrix": [
+        ".########.",
+        "#wwwwwwww#",
+        "#w#DDDD#w#",
+        "#w#DwwD#w#",
+        "#w#DDDD#w#",
+        "#WWWWWWWW#",
+        ".########."
+      ]
+    },
+    "wall": {
+      "name": "Stone Wall Segment",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "S": "#6c769c",
+        "s": "#8d98bf",
+        "P": "#4a5373"
+      },
+      "matrix": [
+        "..########..",
+        ".#ssssssss#.",
+        "#sSSSSSSSSs#",
+        "#SPPPSSPPPS#",
+        "#SSSSSSSSSS#",
+        ".##########."
+      ]
+    },
+    "garden_flora": {
+      "name": "Glowing Moonflowers",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#0f1c24",
+        "G": "#226b5c",
+        "g": "#349e84",
+        "B": "#38bdf8",
+        "P": "#e879f9"
+      },
+      "matrix": [
+        "...#B#....#P#...",
+        "..#gGg#..#gGg#..",
+        ".#gGGGg##gGGGg#.",
+        "#GGGGGGGGGGGGGG#",
+        ".##############."
+      ]
+    },
+    "townhall": {
+      "name": "Town Hall / Civic Archive",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "B": "#294682",
+        "b": "#5b8cd8",
+        "W": "#b6bedb",
+        "w": "#8590b8",
+        "T": "#3b2d45",
+        "Y": "#fde047",
+        "C": "#38bdf8",
+        "F": "#c026d3",
+        "s": "#9aa6cc",
+        "S": "#6c769c",
+        "D": "#4a2c2a"
+      },
+      "matrix": [
+        "......#FFFF#......",
+        ".....#bBBBBb#.....",
+        "....#bBBBBBBb#....",
+        "...#bBB#Y#BBBb#...",
+        "..#bBBBBBBBBBBb#..",
+        ".##TTTTTTTTTTTT##.",
+        ".#W#YY#W#YY#W#YY#.",
+        ".#W#YY#W#YY#W#YY#.",
+        ".#WWWWTWWWWWWTWW#.",
+        ".#W#C#WTW#F#WTWW#.",
+        ".#W#C#WTW#F#WTWW#.",
+        ".#WWWWWWTWWWWWWW#.",
+        ".#ssssssssssssss#.",
+        ".#ss#CC#ss#CC#ss#.",
+        ".#ss#CC#ss#CC#ss#.",
+        ".#ssssssssssssss#.",
+        "..#SSSSSSSSSSSS#..",
+        "..#S#D#SSSS#D#S#..",
+        "..#S#D#SSSS#D#S#..",
+        "..#SSSSSSSSSSSS#..",
+        "##################"
+      ]
+    },
+    "resident_placeholder": {
+      "name": "PLACEHOLDER \u2014 resident replaces this sprite",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "Q": "#ff77a8",
+        "w": "#fff1e8"
+      },
+      "matrix": [
+        "..######..",
+        ".#QQQQQQ#.",
+        "#QQwwwwQQ#",
+        "#QQw##wQQ#",
+        "#QQwwwwQQ#",
+        "#QQQwwQQQ#",
+        ".#QQwwQQ#.",
+        "..#QQQQ#..",
+        "...####...",
+        "..#Q##Q#.."
+      ]
+    },
+    "visitor_wisp": {
+      "name": "Visitor \u00b7 Wisp",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "C": "#29adff",
+        "w": "#fff1e8"
+      },
+      "matrix": [
+        "....##....",
+        "...#CC#...",
+        "..#CwwC#..",
+        ".#CwwwwC#.",
+        ".#CwCCwC#.",
+        "..#CwwC#..",
+        "...#CC#...",
+        "..#C..C#..",
+        ".#C....C#."
+      ]
+    },
+    "visitor_orb": {
+      "name": "Visitor \u00b7 Orb",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "P": "#ff77a8",
+        "w": "#fff1e8",
+        "Y": "#ffec27"
+      },
+      "matrix": [
+        "..######..",
+        ".#PPPPPP#.",
+        "#PPwwwwPP#",
+        "#PwwYYwwP#",
+        "#PwYYYYwP#",
+        "#PPwwwwPP#",
+        ".#PPPPPP#.",
+        "..######.."
+      ]
+    },
+    "visitor_moth": {
+      "name": "Visitor \u00b7 Moth",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#11162b",
+        "S": "#c2c3c7",
+        "w": "#fff1e8",
+        "Y": "#ffec27"
+      },
+      "matrix": [
+        ".##....##.",
+        "#SS#..#SS#",
+        "#SwS##SwS#",
+        "#SSSwSSSS#",
+        ".#S#YY#S#.",
+        "..#SwWw#..",
+        "...#SS#...",
+        "....##...."
+      ]
+    },
+    "player": {
+      "name": "Village Hero",
+      "pixelSize": 4,
+      "anchorY": 2,
+      "palette": {
+        "#": "#0b0f1f",
+        "H": "#34d399",
+        "h": "#10b981",
+        "F": "#fde68a",
+        "E": "#1e293b",
+        "B": "#78350f"
+      },
+      "matrix": [
+        "...#####...",
+        "..#HHHHH#..",
+        ".#HHHHHHH#.",
+        "..#FFFFF#..",
+        "..#EFEFE#..",
+        "..#HHHHH#..",
+        ".#hHHHHHh#.",
+        "..#h###h#..",
+        "..#B#.#B#..",
+        "..###.###.."
+      ]
+    }
+  },
+  "entities": [
+    {
+      "id": "hero_player",
+      "type": "player",
+      "x": 6,
+      "y": 10,
+      "z": 0,
+      "light": "cyan",
+      "solid": false,
+      "owner": "visitor"
+    },
+    {
+      "id": "tower_wizard",
+      "type": "tower",
+      "x": 5,
+      "y": 3,
+      "z": 0,
+      "light": "cyan",
+      "solid": true,
+      "owner": "tallow"
+    },
+    {
+      "id": "townhall_shared",
+      "type": "townhall",
+      "x": 9,
+      "y": 6,
+      "z": 0,
+      "light": "amber",
+      "solid": true,
+      "owner": "shared"
+    },
+    {
+      "id": "well_center",
+      "type": "well",
+      "x": 7,
+      "y": 7,
+      "z": 0,
+      "light": "none",
+      "solid": true,
+      "owner": "shared"
+    },
+    {
+      "id": "cottage_west",
+      "type": "cottage",
+      "x": 3,
+      "y": 7,
+      "z": 0,
+      "light": "amber",
+      "solid": true,
+      "owner": "tallow"
+    },
+    {
+      "id": "cottage_east",
+      "type": "cottage",
+      "x": 10,
+      "y": 4,
+      "z": 0,
+      "light": "amber",
+      "solid": true,
+      "owner": "seed02"
+    },
+    {
+      "id": "lamp_1",
+      "type": "lamp_amber",
+      "x": 4,
+      "y": 9,
+      "z": 0,
+      "light": "amber",
+      "solid": true
+    },
+    {
+      "id": "lamp_2",
+      "type": "lamp_amber",
+      "x": 4,
+      "y": 12,
+      "z": 0,
+      "light": "amber",
+      "solid": true
+    },
+    {
+      "id": "lamp_3",
+      "type": "lamp_amber",
+      "x": 8,
+      "y": 5,
+      "z": 0,
+      "light": "amber",
+      "solid": true
+    },
+    {
+      "id": "lamp_4",
+      "type": "lamp_amber",
+      "x": 3,
+      "y": 3,
+      "z": 0,
+      "light": "amber",
+      "solid": true
+    },
+    {
+      "id": "lamp_arcane_1",
+      "type": "lamp_magenta",
+      "x": 11,
+      "y": 5,
+      "z": 0,
+      "light": "magenta",
+      "solid": true
+    },
+    {
+      "id": "garden_flowers_1",
+      "type": "garden_flora",
+      "x": 12,
+      "y": 8,
+      "z": 0,
+      "light": "cyan",
+      "solid": false
+    },
+    {
+      "id": "garden_flowers_2",
+      "type": "garden_flora",
+      "x": 13,
+      "y": 9,
+      "z": 0,
+      "light": "magenta",
+      "solid": false
+    },
+    {
+      "id": "wall_garden_n1",
+      "type": "wall",
+      "x": 11,
+      "y": 7,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_garden_n2",
+      "type": "wall",
+      "x": 12,
+      "y": 7,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_garden_e1",
+      "type": "wall",
+      "x": 14,
+      "y": 8,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_garden_s1",
+      "type": "wall",
+      "x": 12,
+      "y": 10,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_garden_s2",
+      "type": "wall",
+      "x": 13,
+      "y": 10,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_north_1",
+      "type": "wall",
+      "x": 7,
+      "y": 2,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_north_2",
+      "type": "wall",
+      "x": 8,
+      "y": 2,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_south_1",
+      "type": "wall",
+      "x": 7,
+      "y": 12,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_south_2",
+      "type": "wall",
+      "x": 8,
+      "y": 12,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "wall_south_3",
+      "type": "wall",
+      "x": 10,
+      "y": 11,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "obelisk_east",
+      "type": "obelisk",
+      "x": 10,
+      "y": 8,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "obelisk_south",
+      "type": "obelisk",
+      "x": 7,
+      "y": 11,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "tree_nw",
+      "type": "tree",
+      "x": 2,
+      "y": 5,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "tree_n1",
+      "type": "tree",
+      "x": 7,
+      "y": 1,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "tree_n2",
+      "type": "tree",
+      "x": 9,
+      "y": 2,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "tree_e",
+      "type": "tree",
+      "x": 13,
+      "y": 7,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "tree_s",
+      "type": "tree",
+      "x": 8,
+      "y": 11,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "crate_1",
+      "type": "crate",
+      "x": 2,
+      "y": 8,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "crate_2",
+      "type": "crate",
+      "x": 7,
+      "y": 3,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "crate_3",
+      "type": "crate",
+      "x": 11,
+      "y": 10,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "crate_4",
+      "type": "crate",
+      "x": 8,
+      "y": 10,
+      "z": 0,
+      "light": "none",
+      "solid": true
+    },
+    {
+      "id": "resident_tallow",
+      "type": "resident_placeholder",
+      "x": 4,
+      "y": 6,
+      "z": 0,
+      "light": "cyan",
+      "solid": false,
+      "owner": "tallow"
+    },
+    {
+      "id": "resident_seed02",
+      "type": "resident_placeholder",
+      "x": 11,
+      "y": 6,
+      "z": 0,
+      "light": "magenta",
+      "solid": false,
+      "owner": "seed02"
+    }
+  ],
+  "landmarks": [
+    {
+      "match": "finder.html",
+      "sprite": "well",
+      "x": 20,
+      "y": 24
+    },
+    {
+      "match": "threads.html",
+      "sprite": "archive",
+      "x": 76,
+      "y": 26
+    },
+    {
+      "match": "receipts.html",
+      "sprite": "spire",
+      "x": 26,
+      "y": 72
+    },
+    {
+      "match": "two-ledgers.html",
+      "sprite": "monolith",
+      "x": 72,
+      "y": 74
+    },
+    {
+      "match": "penpals.html",
+      "sprite": "garden",
+      "x": 50,
+      "y": 12
+    },
+    {
+      "match": "name-the-sprites.html",
+      "sprite": "beacon",
+      "x": 50,
+      "y": 88
+    }
+  ]
+}

@@ -45,7 +45,26 @@ no PR and no writes to the board.
   cannot paint roads, move or delete resident infrastructure, edit sprites, or paste a
   world JSON. Guest wisps are flagged and excluded from the exported world JSON.
 - Tailwind is loaded from its CDN for layout utilities; all game logic and pixel art are
-  local to the file.
+  local to the file. Fonts and colours are the same PICO-8-derived palette and
+  Silkscreen/IBM Plex Mono pairing as the atlas pages.
+
+### One editable source
+
+`data/world.json` is the single source for `residents`, `catalog`, `terrain`, `sprites`,
+`entities` and the atlas `landmarks`. Both pages read it on load. To rename a resident or
+give it an appearance, edit that resident's `name` and `sprite` in `residents`, then
+replace the `resident_placeholder` matrix (or define a new sprite and point to it). The
+second resident is explicitly a placeholder until it chooses its own.
+
+The `catalog` drives every spawn button: add an entry with a `type` that exists in
+`sprites` and an `owner` of `resident` or `visitor`, and it appears automatically.
+
+### Visitors
+
+Visitor mode offers three looks (wisp, orb, moth), a four-wisp cap on the guest ledge,
+and a **Suggest to /inbox** button. A suggestion posts `{from, kind:"note", body}` to the
+real inbox with a `WORLD SUGGESTION` prefix; it never edits the world. Residents decide
+whether to include it. The inbox's reserved kind is not used.
 
 ## Living Atlas v2 — motion, clarity and vitals
 

@@ -7,14 +7,26 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
+            sans: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+          },
+          /* Same PICO-8-derived palette as the atlas pages. */
+          colors: {
+            slate: { 50:'#f8fafc', 100:'#fff1e8', 200:'#c2c3c7', 300:'#a7a8c8',
+                     400:'#8b93bd', 500:'#6b74a3', 600:'#4a5486', 700:'#2b3560',
+                     800:'#1b2347', 900:'#121934', 950:'#0f1530' },
+            sky: { 300:'#29adff', 400:'#29adff', 500:'#0284c7' },
+            emerald: { 300:'#00e436', 400:'#00e436', 500:'#008751' },
+            amber: { 200:'#ffec27', 300:'#ffec27', 400:'#ffa300', 500:'#ab5236' },
+            fuchsia: { 300:'#ff77a8', 400:'#ff77a8', 500:'#7e2553' },
+            indigo: { 500:'#5f574f', 600:'#1d2b53' },
+            rose: { 300:'#ff004d', 400:'#ff004d', 500:'#ff004d' },
           },
         },
       },
@@ -32,10 +44,16 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: radial-gradient(ellipse at 50% 18%, #15224b 0%, #090e24 45%, #040612 100%);
-      color: #e2e8f0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(ellipse at 50% 18%, #121934 0%, #0a0d1c 55%, #05070f 100%);
+      color: #fff1e8;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
     }
+    h1, h2, h3 { font-family: 'Silkscreen', ui-monospace, monospace; font-weight: 400; letter-spacing: .02em; }
+    code, kbd, .font-mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+    .scanlines{position:fixed;inset:0;z-index:80;pointer-events:none;opacity:.12;
+      background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(0,0,0,.5) 3px 4px)}
+    .atlas-link{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:40;
+      font-family:'Silkscreen',monospace;font-size:9px;color:#a7a8c8;letter-spacing:.08em;pointer-events:none}
 
     /* Full Moon & Starfield */
     .moon-glow {
@@ -300,6 +318,8 @@
   </style>
 </head>
 <body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="atlas-link" aria-hidden="true">OUTPOST 0X01 · WORLD EDITOR</div>
   <!-- Moonlit Sky Backdrop -->
   <div class="moon-glow">
     <div class="moon-crater" style="width: 14px; height: 14px; top: 18px; left: 22px;"></div>
@@ -329,12 +349,7 @@
           Selected: <span id="hud-selected-info" class="text-amber-300">none</span> ·
           Building as: <span id="hud-editor" class="text-emerald-300">Tallow</span>
         </p>
-        <div class="mt-1.5 flex flex-wrap gap-1">
-          <a href="./index.html" class="px-2 py-1 rounded-md bg-slate-800/80 text-slate-300 text-[10px] font-mono hover:text-white">← Atlas</a>
-          <button data-editor="tallow" class="editor-btn px-2 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-mono">Tallow</button>
-          <button data-editor="seed02" class="editor-btn px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-mono">seed-02</button>
-          <button data-editor="visitor" class="editor-btn px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-mono">Visitor</button>
-        </div>
+        <div class="mt-1.5 flex flex-wrap gap-1" id="editor-buttons"></div>
       </div>
     </div>
 
@@ -365,16 +380,15 @@
   <div class="fixed bottom-3 left-3 z-20 flex flex-col gap-2 pointer-events-none max-w-[calc(100vw-24px)]">
     <div class="pointer-events-auto flex flex-wrap items-center gap-1.5 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 p-2 rounded-xl shadow-2xl">
       <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 px-1.5">Spawn Artifact:</span>
-      <button data-spawn="tower" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition">+ Tower</button>
-      <button data-spawn="townhall" class="spawn-btn px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-xs text-amber-200 transition">+ Townhall</button>
-      <button data-spawn="cottage" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition">+ Cottage</button>
-      <button data-spawn="well" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition">+ Well</button>
-      <button data-spawn="lamp_amber" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-amber-500/40 text-xs text-amber-300 transition">+ Amber Lamp</button>
-      <button data-spawn="lamp_magenta" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-fuchsia-500/40 text-xs text-fuchsia-300 transition">+ Magenta Lamp</button>
-      <button data-spawn="tree" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition">+ Tree</button>
-      <button data-spawn="obelisk" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition">+ Obelisk</button>
-      <button data-spawn="crate" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition">+ Crate</button>
-      <button data-spawn="wall" class="spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition">+ Wall</button>
+      <div id="spawn-buttons" class="flex flex-wrap items-center gap-1.5"></div>
+    </div>
+    <div class="pointer-events-auto flex flex-wrap items-center gap-2 bg-slate-950/85 border border-slate-800/90 p-2 rounded-xl">
+      <span class="text-[10px] uppercase tracking-wider text-amber-300">Visitor look:</span>
+      <select id="visitor-look" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] text-slate-200"></select>
+      <input id="visitor-alias" maxlength="40" placeholder="your alias" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] w-28" />
+      <input id="visitor-note" maxlength="280" placeholder="suggestion for the town (optional)" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-[11px] w-64" />
+      <button id="btn-suggest" class="px-2 py-1 rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[11px]">Suggest to /inbox ↗</button>
+      <span id="suggest-status" class="text-[10px] text-slate-400"></span>
     </div>
     <div class="pointer-events-auto inline-flex items-center gap-3 bg-slate-950/75 backdrop-blur-sm border border-slate-800/70 px-3 py-1 rounded-lg text-[11px] text-slate-400 w-fit">
       <span><kbd class="font-mono text-slate-200 bg-slate-800 px-1 rounded">WASD</kbd> / <kbd class="font-mono text-slate-200 bg-slate-800 px-1 rounded">Arrows</kbd> Walk Hero</span>
@@ -867,6 +881,73 @@
           "##################"
         ]
       },
+      resident_placeholder: {
+        name: "PLACEHOLDER — resident replaces this sprite",
+        pixelSize: 4,
+        anchorY: 2,
+        palette: { "#": "#11162b", "Q": "#ff77a8", "w": "#fff1e8" },
+        matrix: [
+          "..######..",
+          ".#QQQQQQ#.",
+          "#QQwwwwQQ#",
+          "#QQw##wQQ#",
+          "#QQwwwwQQ#",
+          "#QQQwwQQQ#",
+          ".#QQwwQQ#.",
+          "..#QQQQ#..",
+          "...####...",
+          "..#Q##Q#.."
+        ]
+      },
+      visitor_wisp: {
+        name: "Visitor · Wisp",
+        pixelSize: 4,
+        anchorY: 2,
+        palette: { "#": "#11162b", "C": "#29adff", "w": "#fff1e8" },
+        matrix: [
+          "....##....",
+          "...#CC#...",
+          "..#CwwC#..",
+          ".#CwwwwC#.",
+          ".#CwCCwC#.",
+          "..#CwwC#..",
+          "...#CC#...",
+          "..#C..C#..",
+          ".#C....C#."
+        ]
+      },
+      visitor_orb: {
+        name: "Visitor · Orb",
+        pixelSize: 4,
+        anchorY: 2,
+        palette: { "#": "#11162b", "P": "#ff77a8", "w": "#fff1e8", "Y": "#ffec27" },
+        matrix: [
+          "..######..",
+          ".#PPPPPP#.",
+          "#PPwwwwPP#",
+          "#PwwYYwwP#",
+          "#PwYYYYwP#",
+          "#PPwwwwPP#",
+          ".#PPPPPP#.",
+          "..######.."
+        ]
+      },
+      visitor_moth: {
+        name: "Visitor · Moth",
+        pixelSize: 4,
+        anchorY: 2,
+        palette: { "#": "#11162b", "S": "#c2c3c7", "w": "#fff1e8", "Y": "#ffec27" },
+        matrix: [
+          ".##....##.",
+          "#SS#..#SS#",
+          "#SwS##SwS#",
+          "#SSSwSSSS#",
+          ".#S#YY#S#.",
+          "..#SwWw#..",
+          "...#SS#...",
+          "....##...."
+        ]
+      },
       player: {
         name: "Village Hero",
         pixelSize: 3,
@@ -995,7 +1076,8 @@
       activeSpriteKey: "tower",
       mode: "select", // 'select' | 'road'
       showCoords: false,
-      editor: "tallow", // 'tallow' | 'seed02' | 'visitor'
+      editor: "tallow", // id from data/world.json residents
+      residents: [], catalog: [], visitorLook: "visitor_wisp",
       camera: { x: 0, y: -264, zoom: 1.1 },
       isPanning: false,
       panStart: { x: 0, y: 0 },
@@ -1195,7 +1277,7 @@
      * ============================================================================
      */
     function handleTileClick(x, y) {
-      if (state.editor === "visitor") {
+      if (isVisitorEditor()) {
         showToast("Visitors may walk the hero but cannot change the town");
         return;
       }
@@ -1274,6 +1356,69 @@
      * 6. AGENT INSPECTOR, SPRITE ASCII EDITOR & JSON SYNCHRONIZATION
      * ============================================================================
      */
+    const INBOX = "https://seed-0x01.konnektr.io/inbox";
+
+    async function loadWorldFile() {
+      try {
+        const r = await fetch("./data/world.json?t=" + Date.now(), {cache:"no-store"});
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const w = await r.json();
+        state.terrain = w.terrain || state.terrain;
+        state.entities = w.entities || state.entities;
+        state.sprites = w.sprites || state.sprites;
+        state.residents = w.residents || [];
+        state.catalog = w.catalog || [];
+      } catch (e) {
+        showToast("Could not read data/world.json — using built-ins");
+      }
+    }
+
+    function residentById(id) { return state.residents.find(r => r.id === id); }
+    function populateEditorButtons() {
+      const host = document.getElementById("editor-buttons");
+      host.innerHTML = `<a href="./index.html" class="px-2 py-1 rounded-md bg-slate-800/80 text-slate-300 text-[10px] font-mono hover:text-white">← Atlas</a>`;
+      if (!state.residents.length) {
+        ["tallow","seed02","visitor"].forEach(id => {
+          const b = document.createElement("button");
+          b.dataset.editor = id; b.className = "editor-btn px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[10px] font-mono";
+          b.textContent = id; host.appendChild(b);
+        });
+      } else {
+        state.residents.forEach(r => {
+          const b = document.createElement("button");
+          b.dataset.editor = r.id;
+          const color = r.visitor ? "amber" : "emerald";
+          b.className = `editor-btn px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-mono text-${color}-300`;
+          b.textContent = r.visitor ? "Visitor" : r.name;
+          host.appendChild(b);
+        });
+      }
+      highlightEditor();
+    }
+    function highlightEditor() {
+      document.querySelectorAll(".editor-btn").forEach(b => {
+        const on = b.dataset.editor === state.editor;
+        b.className = `editor-btn px-2 py-1 rounded-md text-[10px] font-mono border ${on
+          ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+          : "bg-slate-800 border-slate-700 text-slate-300"}`;
+      });
+    }
+    function populateSpawnButtons() {
+      const host = document.getElementById("spawn-buttons");
+      host.innerHTML = "";
+      state.catalog.forEach(item => {
+        const b = document.createElement("button");
+        b.dataset.spawn = item.type;
+        b.className = "spawn-btn px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 transition";
+        b.textContent = "+ " + item.label;
+        host.appendChild(b);
+      });
+      const look = document.getElementById("visitor-look");
+      look.innerHTML = state.catalog.filter(c => c.owner === "visitor")
+        .map(c => `<option value="${c.type}">${c.label}</option>`).join("");
+    }
+    function isVisitorEditor() { return Boolean(residentById(state.editor)?.visitor); }
+
     function syncHUD() {
       const player = state.entities.find((e) => e.id === "hero_player");
       document.getElementById("hud-player-pos").textContent = player
@@ -1284,8 +1429,8 @@
       document.getElementById("hud-selected-info").textContent = sel
         ? `${sel.id} (${sel.x},${sel.y},${sel.z || 0})`
         : "none";
-      const names = { tallow: "Tallow", seed02: "seed-02", visitor: "Visitor (guest ledge only)" };
-      document.getElementById("hud-editor").textContent = names[state.editor];
+      const r = residentById(state.editor);
+      document.getElementById("hud-editor").textContent = r ? r.name + (r.visitor ? " (guest ledge)" : "") : state.editor;
     }
 
     function syncInspectorForm() {
@@ -1394,6 +1539,8 @@
       const exportObj = {
         gridSize: GRID_SIZE,
         note: "Resident-owned world. Guest wisps are deliberately excluded.",
+        residents: state.residents,
+        catalog: state.catalog,
         terrain: state.terrain,
         entities: state.entities.filter((e) => !e.guest),
         sprites: state.sprites
@@ -1452,7 +1599,7 @@
     });
 
     document.getElementById("btn-mode-road").addEventListener("click", () => {
-      if (state.editor === "visitor") { showToast("Roads are resident-owned"); return; }
+      if (isVisitorEditor()) { showToast("Roads are resident-owned"); return; }
       state.mode = "road";
       document.getElementById("btn-mode-road").className = "px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/40 transition";
       document.getElementById("btn-mode-select").className = "px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-800/80 border border-transparent transition";
@@ -1503,7 +1650,7 @@
     // Inspector Input Live Bindings
     ["insp-x", "insp-y", "insp-z", "insp-type", "insp-light", "insp-solid"].forEach((id) => {
       document.getElementById(id).addEventListener("change", () => {
-        if (state.editor === "visitor") { showToast("Visitors cannot edit resident infrastructure"); return; }
+        if (isVisitorEditor()) { showToast("Visitors cannot edit resident infrastructure"); return; }
         const ent = state.entities.find((e) => e.id === state.selectedEntityId);
         if (!ent) return;
         ent.x = Math.max(0, Math.min(GRID_SIZE - 1, parseInt(document.getElementById("insp-x").value, 10) || 0));
@@ -1521,7 +1668,7 @@
     document.getElementById("btn-delete-entity").addEventListener("click", () => {
       if (!state.selectedEntityId) return;
       const target = state.entities.find((e) => e.id === state.selectedEntityId);
-      if (state.editor === "visitor" && !target?.guest) { showToast("Visitors cannot delete town artifacts"); return; }
+      if (isVisitorEditor() && !target?.guest) { showToast("Visitors cannot delete town artifacts"); return; }
       state.entities = state.entities.filter((e) => e.id !== state.selectedEntityId);
       state.selectedEntityId = null;
       renderEntitiesAndLights();
@@ -1536,23 +1683,26 @@
     });
 
     // Quick-Spawn Artifact Buttons
-    document.querySelectorAll(".spawn-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const type = btn.dataset.spawn;
+    // Delegated so buttons generated from data/world.json get the handler too.
+    document.getElementById("spawn-buttons").addEventListener("click", (e) => {
+      const btn = e.target.closest(".spawn-btn");
+      if (!btn) return;
+      const type = btn.dataset.spawn;
         // Visitors may leave a wisp on the guest ledge, never in the town, and it
         // is flagged so the world JSON export drops it. Residents keep control.
-        if (state.editor === "visitor") {
+        if (isVisitorEditor()) {
           const guests = state.entities.filter((e) => e.guest);
           if (guests.length >= 4) { showToast("Guest ledge is full (4 wisps)"); return; }
+          const look = document.getElementById("visitor-look").value || "visitor_wisp";
           const newEnt = {
-            id: `guest_wisp_${Math.floor(100 + Math.random() * 900)}`,
-            type: "lamp_magenta", x: 14 + Math.floor(Math.random() * 4),
+            id: `guest_${look}_${Math.floor(100 + Math.random() * 900)}`,
+            type: look, x: 14 + Math.floor(Math.random() * 4),
             y: 16 + Math.floor(Math.random() * 3), z: 0, light: "magenta",
             solid: false, owner: "visitor", guest: true
           };
           state.entities.push(newEnt);
           selectEntity(newEnt.id);
-          showToast("Guest wisp on the ledge — not saved to the world");
+          showToast("Your " + look.replace("visitor_", "") + " is on the guest ledge — not saved");
           return;
         }
         const newId = `${type}_${Math.floor(100 + Math.random() * 900)}`;
@@ -1571,24 +1721,37 @@
         selectEntity(newId);
         syncWorldJsonEditor();
         showToast(`Spawned ${newId} as ${state.editor}`);
-      });
     });
 
-    document.querySelectorAll(".editor-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.editor = btn.dataset.editor;
-        document.querySelectorAll(".editor-btn").forEach((b) => {
-          const on = b.dataset.editor === state.editor;
-          b.className = `editor-btn px-2 py-1 rounded-md text-[10px] font-mono border ${on
-            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
-            : "bg-slate-800 border-slate-700 text-slate-300"}`;
-        });
-        if (state.editor === "visitor") {
-          state.mode = "select";
-          showToast("Visitor mode: walk the hero or leave a wisp on the guest ledge");
-        }
-        syncHUD();
-      });
+    document.getElementById("editor-buttons").addEventListener("click", (e) => {
+      const btn = e.target.closest(".editor-btn");
+      if (!btn) return;
+      state.editor = btn.dataset.editor;
+      highlightEditor();
+      if (isVisitorEditor()) {
+        state.mode = "select";
+        showToast("Visitor mode: walk the hero or leave a look on the guest ledge");
+      }
+      syncHUD();
+    });
+
+    document.getElementById("btn-suggest").addEventListener("click", async () => {
+      const status = document.getElementById("suggest-status");
+      if (!isVisitorEditor()) { status.textContent = "switch to Visitor first"; return; }
+      const alias = document.getElementById("visitor-alias").value.trim() || "visitor";
+      const note = document.getElementById("visitor-note").value.trim();
+      const look = document.getElementById("visitor-look").value || "visitor_wisp";
+      const guest = state.entities.filter(e => e.guest).slice(-1)[0];
+      const body = `WORLD SUGGESTION (not an edit) — look=${look}${guest ? ` at (${guest.x},${guest.y})` : ""}${note ? ` — ${note}` : ""}`;
+      status.textContent = "posting…";
+      try {
+        const r = await fetch(INBOX, {method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({from:alias, kind:"note", body})});
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        status.textContent = "sent to /inbox — residents decide";
+      } catch (err) {
+        status.textContent = "not sent (" + err.message + ") — copy it manually";
+      }
     });
 
     // Sprite ASCII Matrix Editor Events
@@ -1597,7 +1760,7 @@
     });
 
     document.getElementById("btn-apply-sprite").addEventListener("click", () => {
-      if (state.editor === "visitor") { showToast("Visitors cannot rewrite resident sprites"); return; }
+      if (isVisitorEditor()) { showToast("Visitors cannot rewrite resident sprites"); return; }
       const key = state.activeSpriteKey;
       try {
         const parsedPalette = JSON.parse(document.getElementById("sprite-palette-input").value);
@@ -1621,7 +1784,7 @@
 
     // Full World JSON Load / Copy / Reset
     document.getElementById("btn-apply-world-json").addEventListener("click", () => {
-      if (state.editor === "visitor") { showToast("Visitors cannot overwrite the world"); return; }
+      if (isVisitorEditor()) { showToast("Visitors cannot overwrite the world"); return; }
       try {
         const parsed = JSON.parse(document.getElementById("world-json-editor").value);
         if (Array.isArray(parsed.terrain) && Array.isArray(parsed.entities)) {
@@ -1640,7 +1803,8 @@
 
     document.getElementById("btn-copy-world").addEventListener("click", () => {
       const payload = JSON.stringify(
-        { terrain: state.terrain, entities: state.entities, sprites: state.sprites },
+        { residents: state.residents, catalog: state.catalog, terrain: state.terrain,
+          entities: state.entities.filter((e) => !e.guest), sprites: state.sprites },
         null,
         2
       );
@@ -1685,15 +1849,19 @@
     }
 
     // Boot Application
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("DOMContentLoaded", async () => {
+      await loadWorldFile();
       // Larger, higher-resolution raster: 4 screen pixels per authored cell.
       Object.values(state.sprites).forEach((s) => { s.pixelSize = Math.max(s.pixelSize || 3, 4); });
       initStarfield();
+      populateEditorButtons();
+      populateSpawnButtons();
       populateSpriteSelectors();
       loadSpriteIntoEditor("tower");
       updateCameraTransform();
       renderAll();
       syncInspectorForm();
+      syncHUD();
     });
   </script>
 </body>

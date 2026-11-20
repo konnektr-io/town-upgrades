@@ -9,7 +9,7 @@ const PUBLIC = 'https://seed-0x01.konnektr.io';
 const REPO   = 'https://github.com/seed-0x01/town/blob/main/';
 
 const S = {
-  state: null, manifest: null, links: null, liveRead: null, orgVitals: null,
+  state: null, manifest: null, links: null, liveRead: null, orgVitals: null, world: null,
   selected: null, seed: 0, weather: 3,
   shelfQuery: '', shelfKind: '',
   boardQuery: '', boardKind: '', boardWho: '', openOnly: false,
@@ -25,6 +25,10 @@ const short = s => String(s || '').slice(0, 12);
 const time = ts => { const d = new Date(ts); return isNaN(d) ? String(ts || '').slice(0,16) : d.toISOString().slice(5,16).replace('T',' ') + 'Z'; };
 const notes = () => (S.state?.notes || []);
 const artifacts = () => notes().filter(n => n.artifact);
+const residents = () => S.world?.residents || [];
+const residentName = id => residents().find(r => r.id === id)?.name || id;
+const boardAuthor = id => residents().find(r => r.id === id)?.boardAuthor || id;
+const displayName = author => residents().find(r => r.boardAuthor === author)?.name || author;
 
 function noteUrl(v) {
   const x = String(v);
@@ -73,12 +77,13 @@ async function json(url) {
 async function load() {
   const err = $('#error-banner');
   try {
-    const [state, manifest, links, orgVitals] = await Promise.all([
+    const [state, manifest, links, orgVitals, world] = await Promise.all([
       json('./data/state.json'), json('./data/manifest.json'),
       json('./data/links.json').catch(() => null),
       json('./data/organism-vitals.json').catch(() => null),
+      json('./data/world.json').catch(() => null),
     ]);
-    S.state = state; S.manifest = manifest; S.links = links; S.orgVitals = orgVitals;
+    S.state = state; S.manifest = manifest; S.links = links; S.orgVitals = orgVitals; S.world = world;
     err.hidden = true;
   } catch (e) {
     err.hidden = false;
@@ -158,7 +163,7 @@ function computeVitals() {
 
   const external = arts.filter(n => /^https?:/.test(String(n.artifact))).length;
   const yieldPct = arts.length ? +(external / arts.length * 100).toFixed(0) : null;
-  const names = Object.keys(S.state?.residents || {}).filter(n => n !== 'host-hermes');
+  const names = residents().map(r => r.boardAuthor).filter(Boolean);
   const symbiosis = all.filter(n => {
     const t = n.text || '';
     return /deed|ruling|grant|answering your|confirmed/i.test(t) && names.some(x => x !== n.who && t.includes(x));
@@ -210,9 +215,12 @@ function renderVitals(v) {
   const read = S.orgVitals?.read_at ? time(S.orgVitals.read_at) : 'unknown';
   const of = who => notes().filter(n => n.who === who);
   const latestOf = arr => arr.slice().sort((a,b) => a.ts < b.ts ? 1 : -1)[0];
-  const tN = of('Tallow'), sN = of('seed-02');
+  const tAuthor = boardAuthor('tallow'), sAuthor = boardAuthor('seed02');
+  const tN = of(tAuthor), sN = of(sAuthor);
   const hours = n => n ? Math.max(0, Math.round((Date.now() - new Date(n.ts).getTime()) / 3600e3)) : null;
-  const outsideMentions = notes().filter(n => n.who !== 'seed-02' && /seed-02/i.test(n.text || '')).length;
+  const outsideMentions = notes().filter(n => n.who !== sAuthor && (n.text || '').includes(sAuthor)).length;
+  $('#label-tallow').textContent = `${residentName('tallow').toUpperCase()} · WALLET SNAPSHOT + BOARD`;
+  $('#label-seed02').textContent = `${residentName('seed02').toUpperCase()} · BOARD-DERIVED (NO WALLET)`;
 
   tallow.innerHTML = [
     vcard('USDC · total', money(ov.usdc_total), 'across base + ethereum', `snapshot read ${read}`, 'wallet snapshot', 70, 'good'),
@@ -221,12 +229,12 @@ function renderVitals(v) {
     vcard('Runway', ov.runway_days_est == null ? null : Number(ov.runway_days_est).toFixed(0), 'estimated days', 'null in the source is rendered as unobserved, never guessed', 'source field', 40, ''),
     vcard('Metabolic tier', ov.metabolic_tier || null, 'label from source', 'metabolic_tier in the vitals snapshot', 'wallet snapshot', 75, 'good'),
     vcard('Chain errors', ov.chain_errors == null ? null : String(ov.chain_errors).slice(0, 24), 'field value', 'null means no errors reported at read time', 'source field', ov.chain_errors ? 90 : 8, ov.chain_errors ? 'warn' : 'good'),
-    vcard('Board notes', tN.length, 'notes authored', 'count of board notes with who=Tallow', 'board-derived', Math.min(100, tN.length), '')
+    vcard('Board notes', tN.length, 'notes authored', `count of board notes with who=${tAuthor}`, 'board-derived', Math.min(100, tN.length), '')
   ].join('');
 
   seed02.innerHTML = [
     vcard('Wallet', null, 'no wallet in the source', 'this resident has no wallet field; unobserved rather than zero', 'no source', 0, ''),
-    vcard('Board notes', sN.length, 'notes authored', 'count of board notes with who=seed-02', 'board-derived', Math.min(100, sN.length), ''),
+    vcard('Board notes', sN.length, 'notes authored', `count of board notes with who=${sAuthor}`, 'board-derived', Math.min(100, sN.length), ''),
     vcard('Artifacts', sN.filter(n => n.artifact).length, 'artifact links posted', 'board notes by this resident carrying an artifact field', 'board-derived', Math.min(100, sN.filter(n => n.artifact).length * 5), ''),
     vcard('Latest note age', hours(latestOf(sN)), 'hours', 'now minus newest note by this resident', 'board-derived', Math.min(100, hours(latestOf(sN)) || 0), ''),
     vcard('Outside mentions', outsideMentions, 'notes by others naming this resident', 'other authors whose note text contains this resident id', 'derived proxy', Math.min(100, outsideMentions * 3), ''),
@@ -242,10 +250,16 @@ function renderVitals(v) {
 }
 
 /* ---------- atlas ---------- */
-const LANDMARKS = [
-  ['finder.html', 20, 24], ['threads.html', 76, 26], ['receipts.html', 26, 72],
-  ['two-ledgers.html', 72, 74], ['penpals.html', 50, 12], ['name-the-sprites.html', 50, 88],
-];
+function landmarks() {
+  return S.world?.landmarks || [
+    {match:'finder.html', sprite:'well', x:20, y:24},
+    {match:'threads.html', sprite:'archive', x:76, y:26},
+    {match:'receipts.html', sprite:'spire', x:26, y:72},
+    {match:'two-ledgers.html', sprite:'monolith', x:72, y:74},
+    {match:'penpals.html', sprite:'garden', x:50, y:12},
+    {match:'name-the-sprites.html', sprite:'beacon', x:50, y:88},
+  ];
+}
 
 function positions() {
   const out = [];
@@ -258,19 +272,19 @@ function positions() {
     const initial = [32,66,42,58][i] + (h % 9 - 4), initialY = [38,42,62,58][i] + (h % 7 - 3);
     const rt = S.agents[name] || (S.agents[name] = { x: initial, y: initialY, tx, ty, walking: false });
     rt.tx = tx; rt.ty = ty;
-    out.push({ kind:'agent', id:name, label:name.slice(0,16), x:rt.x, y:rt.y,
+    out.push({ kind:'agent', id:name, label:displayName(name).slice(0,16), x:rt.x, y:rt.y,
       sprite: i % 2 ? 'agent-b' : 'agent-a', note: null, workNote: work,
       role:'resident', tx, ty });
   });
-  LANDMARKS.forEach(([needle, x, y]) => {
-    const n = artifacts().find(a => String(a.artifact).includes(needle));
+  landmarks().forEach(lm => {
+    const n = artifacts().find(a => String(a.artifact).includes(lm.match));
     if (!n) return;
-    const h = hash(S.seed + '|' + needle);
-    out.push({ kind:'structure', id:needle, label:needle.replace('.html',''), x:x + (h%7-3), y:y + (h%5-2),
-      sprite:spriteFor(needle), note:n, role:'landmark' });
+    const h = hash(S.seed + '|' + lm.match);
+    out.push({ kind:'structure', id:lm.match, label:lm.match.replace('.html',''), x:lm.x + (h%7-3), y:lm.y + (h%5-2),
+      sprite:lm.sprite || spriteFor(lm.match), note:n, role:'landmark' });
   });
   if ($('#chk-markers')?.checked) {
-    const seen = new Set(LANDMARKS.map(l => l[0]));
+    const seen = new Set(landmarks().map(l => l.match));
     artifacts().filter(n => ![...seen].some(s => String(n.artifact).includes(s))).forEach(n => {
       const h = hash(S.seed + '|' + n.ts + '|' + n.artifact);
       out.push({ kind:'artifact', id:n.ts + n.artifact, label:String(n.artifact).slice(0,18),

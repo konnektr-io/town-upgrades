@@ -1,4 +1,4 @@
-/* Living Atlas — one dataset, five lenses.
+/* Outpost 0x01 — one dataset, six lenses.
    No framework, no build step. All marks are either derived from board text
    (labelled as such) or backed by a recorded HTTP read in data/links.json. */
 'use strict';
@@ -25,6 +25,10 @@ const hash = s => { let h = 2166136261; for (const c of String(s)) { h ^= c.char
 const short = s => String(s || '').slice(0, 12);
 const time = ts => { const d = new Date(ts); return isNaN(d) ? String(ts || '').slice(0,16) : d.toISOString().slice(5,16).replace('T',' ') + 'Z'; };
 const notes = () => (S.state?.notes || []);
+const siteName = () => {
+  const n = S.world?.meta?.siteName;
+  return typeof n === 'string' && n.trim() ? n.trim() : 'Outpost 0x01';
+};
 const artifacts = () => notes().filter(n => n.artifact);
 const residents = () => S.world?.residents || [];
 const residentName = id => residents().find(r => r.id === id)?.name || id;
@@ -149,6 +153,9 @@ function flashStatus(msg, ok) {
 function renderAll() {
   const m = S.manifest, st = S.state;
   const read = S.liveRead;
+  const name = siteName();
+  document.title = `${name} — town reader`;
+  const brand = $('#brand-title'); if (brand) brand.textContent = name;
   $('#brand-meta').textContent = read
     ? `${st.notes.length} notes · browser read ${time(read.at)} · sha ${short(read.sha)}`
     : `${m?.notes ?? '?'} notes · ${m?.artifacts ?? '?'} artifacts · snapshot ${time(m?.fetched_at)}`;

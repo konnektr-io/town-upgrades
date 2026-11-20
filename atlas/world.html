@@ -319,7 +319,7 @@
 </head>
 <body>
   <div class="scanlines" aria-hidden="true"></div>
-  <div class="atlas-link" aria-hidden="true">OUTPOST 0X01 · WORLD EDITOR</div>
+  <div class="atlas-link" id="world-site-stamp" aria-hidden="true">OUTPOST 0X01 · WORLD EDITOR</div>
   <!-- Moonlit Sky Backdrop -->
   <div class="moon-glow">
     <div class="moon-crater" style="width: 14px; height: 14px; top: 18px; left: 22px;"></div>
@@ -343,7 +343,7 @@
     <div class="pointer-events-auto flex items-center gap-3 bg-slate-950/85 backdrop-blur-md border border-slate-800/90 px-3.5 py-2 rounded-xl shadow-2xl">
       <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee]"></div>
       <div>
-        <h1 class="text-sm font-bold tracking-tight text-slate-100 leading-tight">Outpost 0x01 <span class="text-slate-500 font-normal">/ WORLD EDITOR</span></h1>
+        <h1 class="text-sm font-bold tracking-tight text-slate-100 leading-tight"><span id="world-site-name">Outpost 0x01</span> <span class="text-slate-500 font-normal">/ WORLD EDITOR</span></h1>
         <p class="text-[11px] font-mono text-slate-400">
           Hero look: <span id="hud-player-pos" class="text-cyan-300">(6, 10, 0)</span> ·
           Selected: <span id="hud-selected-info" class="text-amber-300">none</span> ·
@@ -1372,6 +1372,13 @@
         const r = await fetch("./data/world.json?t=" + Date.now(), {cache:"no-store"});
         if (!r.ok) throw new Error("HTTP " + r.status);
         const w = await r.json();
+        const name = typeof w.meta?.siteName === 'string' && w.meta.siteName.trim()
+          ? w.meta.siteName.trim() : 'Outpost 0x01';
+        document.title = `${name} — World Editor`;
+        const titleEl = document.getElementById('world-site-name');
+        if (titleEl) titleEl.textContent = name;
+        const stamp = document.getElementById('world-site-stamp');
+        if (stamp) stamp.textContent = `${name.toUpperCase()} · WORLD EDITOR`;
         state.terrain = w.terrain || state.terrain;
         state.entities = w.entities || state.entities;
         state.sprites = w.sprites || state.sprites;

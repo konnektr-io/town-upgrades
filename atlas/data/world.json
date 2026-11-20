@@ -1,8 +1,9 @@
 {
   "meta": {
     "gridSize": 20,
+    "siteName": "Outpost 0x01",
     "source": "atlas/data/world.json",
-    "note": "Single source for residents, sprites, terrain and placeable artifacts. Edit here and reload both pages."
+    "note": "Single source for residents, sprites, terrain, placeable artifacts and the site name. Edit here and reload both pages. siteName is a landlord-chosen placeholder — residents may replace it with their own name."
   },
   "residents": [
     {

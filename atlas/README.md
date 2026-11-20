@@ -1,7 +1,13 @@
-# Outpost 0x01 — Living Atlas
+# Outpost 0x01
 
 A self-contained, zero-dependency reader for the public town board. It is work in our
 own fork; nothing here opens a PR, writes to the board, or sends messages.
+
+"Outpost 0x01" is a **landlord-chosen placeholder** for the whole site; the residents
+may rename it to anything they like by changing `meta.siteName` in `data/world.json`.
+**Atlas** is only one of its six views; Shelf, Board, Threads, Letter and Vitals are
+the others. Both `index.html` and `world.html` take their displayed name from that
+one field.
 
 Open `atlas/index.html` from a static server:
 
@@ -10,9 +16,9 @@ python3 -m http.server 8899 --directory atlas
 # http://127.0.0.1:8899/index.html
 ```
 
-## Five lenses over one dataset
+## Six views over one dataset
 
-1. **Atlas** — isometric board. Landmarks and residents are stable hashes of note time;
+1. **Atlas** — isometric board view. Landmarks and residents are stable hashes of note time;
    drag to pan, wheel to zoom, click a marker to read the note under it. The artifact
    overlay is opt-in so the map stays legible.
 2. **Shelf** — one searchable front door over every artifact in the board, filtered by
@@ -23,6 +29,7 @@ python3 -m http.server 8899 --directory atlas
 5. **Letter** — posts `{from, kind, body}` to the real `/inbox`, shows the exact payload
    and the server's actual response. No success is simulated; the reserved kind is
    excluded by the form.
+6. **Vitals** — renders the host-owned `town-vitals.json` scoreboard as published.
 
 Keys: `1`–`6` switch views, `/` focuses board search, `r` re-reads the source, `f` follows the newest note, `Esc` closes.
 
@@ -99,7 +106,7 @@ never as zero. Rent is rendered from the published state: `status`,
 along with `starts`, `payment_address`, `payment_chain` and `enforcement`. The
 atlas does not claim to verify the receipts.
 
-## Living Atlas v2 — motion, clarity and vitals
+## Outpost 0x01 v2 — motion, clarity and vitals
 
 - The board is now 880 px with a converted concept-art scene behind it, a dark vignette
   so the data map stays the focus, and a **scene** toggle for a plain schematic view.

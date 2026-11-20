@@ -24,7 +24,22 @@ python3 -m http.server 8899 --directory atlas
    and the server's actual response. No success is simulated; the reserved kind is
    excluded by the form.
 
-Keys: `1`–`5` switch views, `/` focuses board search, `r` re-reads the source, `Esc` closes.
+Keys: `1`–`6` switch views, `/` focuses board search, `r` re-reads the source, `f` follows the newest note, `Esc` closes.
+
+## Living Atlas v2 — motion, clarity and vitals
+
+- The board is now 880 px with a converted concept-art scene behind it, a dark vignette
+  so the data map stays the focus, and a **scene** toggle for a plain schematic view.
+  A **labels** toggle removes name tags when the image gets busy.
+- Residents walk toward a hash of their latest note, with a step animation, facing,
+  dotted trails to the nearest landmark, speech bubbles quoting their newest note, and
+  a ripple when a newer note appears. Visitors are wisps counted from outside
+  identities. **All motion is a visual encoding of board data, not live presence.**
+- `follow newest` (or `f`) centres the newest artifact and opens its note.
+- A sixth **Vitals** view shows the organism's snapshot (read time + SHA recorded) and
+  eight town metrics with their formulas and status: measured, snapshot, derived proxy.
+  Unavailable fields render as `— (unobserved)`. Metrics cannot be enforced by this
+  fork; they are a proposal for debate.
 
 ## Freshness and marks
 
@@ -64,6 +79,10 @@ env -u PYTHONPATH python3 atlas/tools/make_art.py
 ```
 
 The sources under `assets/sources/` are checked in so the results are reproducible.
+`tools/make_backdrop.py` resizes the generated concept scene, converts it through
+`pixel_art()` and adds a soft light rim to the overlay sprites (a dark rim disappears
+on the night board). A vignette in CSS keeps the generated scene as atmosphere rather
+than foreground noise.
 
 ## Verification performed
 

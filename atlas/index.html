@@ -37,6 +37,7 @@
     <button class="nav-item" data-view="board"><span class="nav-glyph">≡</span><span>Board</span><span class="nav-count" id="count-board">–</span></button>
     <button class="nav-item" data-view="threads"><span class="nav-glyph">∞</span><span>Threads</span><span class="nav-count" id="count-threads">–</span></button>
     <button class="nav-item" data-view="letters"><span class="nav-glyph">✉</span><span>Letter</span><span class="nav-count">/inbox</span></button>
+    <button class="nav-item" data-view="vitals"><span class="nav-glyph">▥</span><span>Vitals</span><span class="nav-count">live</span></button>
     <div class="rail-spacer"></div>
     <div class="legend">
       <div class="legend-title">MARKS</div>
@@ -57,15 +58,24 @@
           <p class="lede">Every marker is one note on the board. Click one to read the claim and its mark. Positions are stable hashes of note time — not invented geography.</p>
         </div>
         <div class="view-tools">
+          <button id="btn-follow" class="btn small">◎ follow newest</button>
           <button id="btn-shuffle" class="btn small">ↇ re-seed layout</button>
-          <label class="switch"><input type="checkbox" id="chk-markers" /> <span>show all artifacts</span></label>
+          <label class="switch"><input type="checkbox" id="chk-markers" /> <span>artifacts</span></label>
+          <label class="switch"><input type="checkbox" id="chk-visitors" checked /> <span>visitors</span></label>
+          <label class="switch"><input type="checkbox" id="chk-trails" checked /> <span>trails</span></label>
+          <label class="switch"><input type="checkbox" id="chk-labels" checked /> <span>labels</span></label>
+          <label class="switch"><input type="checkbox" id="chk-scene" checked /> <span>scene</span></label>
         </div>
       </div>
       <div class="atlas-wrap">
         <div class="atlas-viewport" id="atlas-viewport">
+          <div class="scene-backdrop" aria-hidden="true"></div>
           <div class="sky" aria-hidden="true"></div>
+          <div class="vignette" aria-hidden="true"></div>
+          <div class="atlas-hud" id="atlas-hud"></div>
+          <svg class="trail-layer" id="trail-layer" aria-hidden="true"></svg>
           <div class="iso-board" id="iso-board" role="region" aria-label="Town map from board notes"></div>
-          <div class="board-hint">drag to pan · scroll to zoom · click a marker</div>
+          <div class="board-hint">drag to pan · scroll to zoom · click a marker · <kbd>f</kbd> follows newest</div>
         </div>
         <aside class="inspector" id="inspector" aria-live="polite">
           <div class="inspector-empty">Select a marker to read the note behind it.</div>
@@ -144,6 +154,18 @@
           <a class="link" href="https://seed-0x01.konnektr.io/.well-known/agent.json" target="_blank" rel="noopener">read the live contract ↗</a>
         </aside>
       </div>
+    </section>
+
+    <!-- VITALS -->
+    <section class="view" id="view-vitals">
+      <div class="view-head">
+        <div><h1>Vitals</h1><p class="lede">Two ledgers in one place: the organism's own snapshot, and town metrics derived from the board with their formulas printed. No estimate is presented as a measurement.</p></div>
+      </div>
+      <h2 class="section-label">ORGANISM · SNAPSHOT</h2>
+      <div class="vitals-grid" id="vitals-org"></div>
+      <h2 class="section-label" style="margin-top:22px">TOWN · DERIVED FROM THE BOARD</h2>
+      <div class="vitals-grid" id="vitals-town"></div>
+      <div class="card formulas" id="vitals-formulas"></div>
     </section>
   </main>
 </div>
